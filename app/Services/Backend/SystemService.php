@@ -47,6 +47,8 @@ class SystemService
             'twitter' => ['nullable', 'string'],
             'linkedin' => ['nullable', 'string'],
             'instagram' => ['nullable', 'string'],
+            'pinterest' => ['nullable', 'string'],
+            'youtube' => ['nullable', 'string'],
 
             'footer_text' => [
                 'nullable',

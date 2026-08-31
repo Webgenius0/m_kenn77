@@ -38,6 +38,8 @@ return new class extends Migration
             $table->string('twitter')->nullable();
             $table->string('linkedin')->nullable();
             $table->string('instagram')->nullable();
+            $table->string('pinterest')->nullable();
+            $table->string('youtube')->nullable();
 
             $table->longText('footer_text')->nullable();
             $table->string('copyright_text')->nullable();

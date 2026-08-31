@@ -36,4 +36,16 @@ class Page extends Model
             ]
         );
     }
+
+    public static function cancellationPolicy(): self
+    {
+        return self::firstOrCreate(
+            ['slug' => 'cancellation-policy'],
+            [
+                'title' => 'Cancellation Policy',
+                'content' => '',
+                'status' => true,
+            ]
+        );
+    }
 }

@@ -42,6 +42,14 @@ const items: MenuItem[] = [
                 title: 'Terms & Conditions',
                 href: '/admin/page/terms-and-conditions',
             },
+            {
+                title: 'Cancellation Policy',
+                href: '/admin/page/cancellation-policy',
+            },
+            {
+                title: 'Get In Touch',
+                href: '/admin/contacts',
+            },
         ],
     },
     {

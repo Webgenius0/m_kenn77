@@ -29,6 +29,8 @@ class Setting extends Model
         'twitter',
         'linkedin',
         'instagram',
+        'pinterest',
+        'youtube',
 
         'footer_text',
         'copyright_text',

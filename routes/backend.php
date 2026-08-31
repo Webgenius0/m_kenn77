@@ -1,6 +1,7 @@
 <?php
 
 // use App\Http\Controllers\Settings\ProfileController;
+use App\Http\Controllers\Web\Backend\ContactController;
 use App\Http\Controllers\Web\Backend\DashboardController;
 use App\Http\Controllers\Web\Backend\DynamicPageController;
 use App\Http\Controllers\Web\Backend\FaqController;
@@ -24,6 +25,13 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::put('/users/{id}', [UserController::class, 'update'])->name('admin.users.update');
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
     Route::get('users/{user}/sessions', [UserController::class, 'sessions'])->name('admin.users.sessions');
+
+    // Contact Management routes and controller
+    Route::get('/contacts', [ContactController::class, 'index'])->name('admin.contacts.index');
+    Route::get('/contacts/{contact}', [ContactController::class, 'show'])->name('admin.contacts.show');
+    Route::put('/contacts/{contact}', [ContactController::class, 'update'])->name('admin.contacts.update');
+    Route::delete('/contacts/{contact}', [ContactController::class, 'destroy'])->name('admin.contacts.destroy');
+    Route::get('/contacts/export/csv', [ContactController::class, 'export'])->name('admin.contacts.export');
 
     // System setting here
     Route::get('/settings/system', [SystemSettingsController::class, 'index'])->name('admin.settings.system.index');

@@ -59,6 +59,12 @@ export default function System({
             instagram:
                 setting?.instagram || '',
 
+            pinterest:
+                setting?.pinterest || '',
+
+            youtube:
+                setting?.youtube || '',
+
             footer_text:
                 setting?.footer_text || '',
 
@@ -431,6 +437,8 @@ export default function System({
                             'twitter',
                             'linkedin',
                             'instagram',
+                            'pinterest',
+                            'youtube',
                         ].map((social) => (
                             <div
                                 className="col-lg-6"
