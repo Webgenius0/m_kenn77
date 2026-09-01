@@ -27,6 +27,7 @@ export default function Edit({
         first_name: user.first_name || "",
         last_name: user.last_name || "",
         email: user.email || "",
+        phone_number: user.phone_number || "",
         password: "",
         password_confirmation: "",
         role: user.role || "",
@@ -207,6 +208,48 @@ export default function Edit({
                                         <div className="text-danger mt-1">
                                             {
                                                 errors.email
+                                            }
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Phone Number */}
+                            <div className="col-lg-6">
+                                <div className="mb-20">
+                                    <label className="label fs-16 mb-2">
+                                        Phone Number
+                                    </label>
+
+                                    <div className="form-floating">
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            placeholder="Phone number"
+                                            value={
+                                                data.phone_number
+                                            }
+                                            onChange={(
+                                                e
+                                            ) =>
+                                                setData(
+                                                    "phone_number",
+                                                    e
+                                                        .target
+                                                        .value
+                                                )
+                                            }
+                                        />
+
+                                        <label>
+                                            Phone number
+                                        </label>
+                                    </div>
+
+                                    {errors.phone_number && (
+                                        <div className="text-danger mt-1">
+                                            {
+                                                errors.phone_number
                                             }
                                         </div>
                                     )}
@@ -402,7 +445,7 @@ export default function Edit({
                                             .target
                                             .value
                                     )
-                                    
+
                                 }
                             >
                                 <option value="">

@@ -80,7 +80,7 @@ export default function MainNavbar() {
                         <div className="right-header-content mt-3 mt-md-0">
                             <ul className="d-flex align-items-center justify-content-center justify-content-md-end ps-0 mb-0 list-unstyled">
                                 {/* Language */}
-                                <li className="header-right-item language-item">
+                                {/* <li className="header-right-item language-item">
                                     <div className="dropdown notifications language">
                                         <button
                                             aria-expanded="false"
@@ -155,7 +155,7 @@ export default function MainNavbar() {
                                             </div>
                                         </div>
                                     </div>
-                                </li>
+                                </li> */}
 
                                 {/* Dark Mode */}
                                 <li className="header-right-item light-dark-item">

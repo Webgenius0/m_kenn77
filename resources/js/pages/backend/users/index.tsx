@@ -9,6 +9,7 @@ interface User {
     first_name: string;
     last_name: string;
     email: string;
+    phone_number: string;
     avatar: string;
     role: string;
     created_at: string;
@@ -272,6 +273,10 @@ export default function Index({ users, filters }: Props) {
                                                 </th>
 
                                                 <th>
+                                                    Phone Number
+                                                </th>
+
+                                                <th>
                                                     Role
                                                 </th>
 
@@ -315,6 +320,11 @@ export default function Index({ users, filters }: Props) {
                                                         <td>
                                                             {user.email}
                                                         </td>
+
+                                                        <td>
+                                                            {user.phone_number || '-'}
+                                                        </td>
+
                                                         <td>
                                                             <span
                                                                 className={

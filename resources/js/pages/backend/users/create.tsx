@@ -16,6 +16,7 @@ export default function Create() {
         first_name: '',
         last_name: '',
         email: '',
+        phone_number: '',
         password: '',
         password_confirmation: '',
         role: '',
@@ -138,7 +139,7 @@ export default function Create() {
                                     )}
                                 </div>
                             </div>
-                            
+
                             {/* Email */}
                             <div className="col-lg-6">
                                 <div className="mb-20">
@@ -175,6 +176,48 @@ export default function Create() {
                                         <div className="text-danger mt-1">
                                             {
                                                 errors.email
+                                            }
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Phone Number */}
+                            <div className="col-lg-6">
+                                <div className="mb-20">
+                                    <label className="label fs-16 mb-2">
+                                        Phone Number
+                                    </label>
+
+                                    <div className="form-floating">
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            placeholder="Phone number"
+                                            value={
+                                                data.phone_number
+                                            }
+                                            onChange={(
+                                                e
+                                            ) =>
+                                                setData(
+                                                    'phone_number',
+                                                    e
+                                                        .target
+                                                        .value
+                                                )
+                                            }
+                                        />
+
+                                        <label>
+                                            Phone number
+                                        </label>
+                                    </div>
+
+                                    {errors.phone_number && (
+                                        <div className="text-danger mt-1">
+                                            {
+                                                errors.phone_number
                                             }
                                         </div>
                                     )}

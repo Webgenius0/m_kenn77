@@ -65,6 +65,7 @@ class UserController extends Controller
             'first_name' => ['required'],
             'last_name' => ['required'],
             'email' => ['required', 'email', 'unique:users,email'],
+            'phone_number' => ['nullable', 'string', 'regex:/^[0-9\+\-\s\(\)]{7,}$/', 'max:20'],
             'password' => ['required', 'min:6'],
             'avatar' => ['nullable'],
             'role' => [
@@ -109,6 +110,13 @@ class UserController extends Controller
                 'required',
                 'email',
                 'unique:users,email,' . $user->id,
+            ],
+
+            'phone_number' => [
+                'nullable',
+                'string',
+                'regex:/^[0-9\+\-\s\(\)]{7,}$/',
+                'max:20',
             ],
 
             'avatar' => [

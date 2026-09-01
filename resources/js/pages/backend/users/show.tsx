@@ -46,7 +46,7 @@ export default function Show({
                         />
 
                         <h3 className="mb-1">
-                            {user.name}
+                            {user.first_name + ' ' + user.last_name}
                         </h3>
 
                         <p className="text-muted mb-3">
@@ -110,7 +110,7 @@ export default function Show({
                             </label>
 
                             <div className="form-control bg-light">
-                                {user.name}
+                                {user.first_name + ' ' + user.last_name}
                             </div>
 
                         </div>
@@ -124,6 +124,19 @@ export default function Show({
 
                             <div className="form-control bg-light">
                                 {user.email}
+                            </div>
+
+                        </div>
+
+                        {/* Phone Number */}
+                        <div className="col-md-6 mb-4">
+
+                            <label className="label fs-14 text-muted mb-2">
+                                Phone Number
+                            </label>
+
+                            <div className="form-control bg-light">
+                                {user.phone_number || '-'}
                             </div>
 
                         </div>
