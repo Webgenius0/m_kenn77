@@ -103,14 +103,14 @@ export default function Index({ faqs }: Props) {
                                             </td>
                                             <td className="">
                                                 <div className="d-flex justify-content-end" style={{ gap: "12px" }}>
-                                                    <Link href={'/admin/faq/edit/' + faq.id} className="bg-transparent p-0 border-0 hover-text-success" data-bs-placement="top" data-bs-title="Edit" data-bs-toggle="tooltip">
+                                                    <Link href={'/admin/faq/edit/' + faq.id} className="bg-transparent p-0 border-0 hover-text-success" aria-label="Edit FAQ">
                                                         <i className="material-symbols-outlined fs-16 fw-normal text-primary">
                                                             Edit
                                                         </i>
                                                     </Link>
-                                                    <button className="bg-transparent p-0 border-0 hover-text-danger"
+                                                    <button className="bg-transparent p-0 border-0 hover-text-danger" aria-label="Delete FAQ"
                                                         onClick={() => deleteFaq(faq.id)}
-                                                        data-bs-placement="top" data-bs-title="Delete" data-bs-toggle="tooltip">
+                                                        >
                                                         <i className="material-symbols-outlined fs-16 fw-normal text-body">
                                                             delete
                                                         </i>

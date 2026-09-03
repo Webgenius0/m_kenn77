@@ -2,6 +2,7 @@
 
 // use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Web\Backend\ContactController;
+use App\Http\Controllers\Web\Backend\CouponController;
 use App\Http\Controllers\Web\Backend\DashboardController;
 use App\Http\Controllers\Web\Backend\DynamicPageController;
 use App\Http\Controllers\Web\Backend\FaqController;
@@ -58,6 +59,14 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::get('/faq/edit/{id}', [FaqController::class, 'edit'])->name('admin.faq.edit');
     Route::post('/faq/update/{id}', [FaqController::class, 'update'])->name('admin.faq.update');
     Route::delete('/faq/delete/{id}', [FaqController::class, 'destroy'])->name('admin.faq.delete');
+
+    // Coupon management routes
+    Route::get('/coupons', [CouponController::class, 'index'])->name('admin.coupons.index');
+    Route::get('/coupons/create', [CouponController::class, 'create'])->name('admin.coupons.create');
+    Route::post('/coupons', [CouponController::class, 'store'])->name('admin.coupons.store');
+    Route::get('/coupons/{coupon}/edit', [CouponController::class, 'edit'])->name('admin.coupons.edit');
+    Route::put('/coupons/{coupon}', [CouponController::class, 'update'])->name('admin.coupons.update');
+    Route::delete('/coupons/{coupon}', [CouponController::class, 'destroy'])->name('admin.coupons.destroy');
 
     // Logs controller
     Route::get('/logs', [LogController::class, 'index'])->name('admin.log.index');
