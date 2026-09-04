@@ -2,10 +2,12 @@
 
 // use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Web\Backend\ContactController;
+use App\Http\Controllers\Web\Backend\AboutUsController;
 use App\Http\Controllers\Web\Backend\CouponController;
 use App\Http\Controllers\Web\Backend\DashboardController;
 use App\Http\Controllers\Web\Backend\DynamicPageController;
 use App\Http\Controllers\Web\Backend\FaqController;
+use App\Http\Controllers\Web\Backend\GalleryController;
 use App\Http\Controllers\Web\Backend\LogController;
 use App\Http\Controllers\Web\Backend\ProfileController;
 use App\Http\Controllers\Web\Backend\QueueController;
@@ -52,6 +54,10 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::get('/page/{slug}', [DynamicPageController::class, 'dynamicPage'])->name('admin.page.index');
     Route::post('/page/update/{slug}', [DynamicPageController::class, 'updatePage'])->name('admin.page.update');
 
+    // About Us content management
+    Route::get('/about-us', [AboutUsController::class, 'index'])->name('admin.about-us.index');
+    Route::match(['post', 'put'], '/about-us', [AboutUsController::class, 'update'])->name('admin.about-us.update');
+
     // profile routes and controller
     Route::get('/faq/list', [FaqController::class, 'index'])->name('admin.faq.index');
     Route::get('/faq/create', [FaqController::class, 'create'])->name('admin.faq.create');
@@ -59,6 +65,14 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::get('/faq/edit/{id}', [FaqController::class, 'edit'])->name('admin.faq.edit');
     Route::post('/faq/update/{id}', [FaqController::class, 'update'])->name('admin.faq.update');
     Route::delete('/faq/delete/{id}', [FaqController::class, 'destroy'])->name('admin.faq.delete');
+
+    // Gallery management routes and controller
+    Route::get('/galleries', [GalleryController::class, 'index'])->name('admin.galleries.index');
+    Route::get('/galleries/create', [GalleryController::class, 'create'])->name('admin.galleries.create');
+    Route::post('/galleries', [GalleryController::class, 'store'])->name('admin.galleries.store');
+    Route::get('/galleries/{gallery}/edit', [GalleryController::class, 'edit'])->name('admin.galleries.edit');
+    Route::put('/galleries/{gallery}', [GalleryController::class, 'update'])->name('admin.galleries.update');
+    Route::delete('/galleries/{gallery}', [GalleryController::class, 'destroy'])->name('admin.galleries.destroy');
 
     // Coupon management routes
     Route::get('/coupons', [CouponController::class, 'index'])->name('admin.coupons.index');

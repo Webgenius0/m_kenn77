@@ -16,16 +16,6 @@ class UserController extends Controller
 {
     use ApiResponse;
 
-    private array $notificationFields = [
-        'email_notifications',
-        'push_notifications',
-        'sms_notifications',
-        'match_notifications',
-        'message_notifications',
-        'like_notifications',
-        'marketing_notifications',
-    ];
-
     public function profile()
     {
         $user = Auth::user();
@@ -37,7 +27,8 @@ class UserController extends Controller
         $user = $request->user();
 
         $validator = Validator::make($request->all(), [
-            'name' => ['required', 'string', 'max:255'],
+            'first_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['nullable', 'string', 'max:255'],
             'email' => [
                 'required',
                 'email',
@@ -50,6 +41,7 @@ class UserController extends Controller
                 'mimes:jpg,jpeg,png,webp',
                 'max:2048',
             ],
+            'phone_number' => ['nullable', 'string', 'max:20'],
         ]);
 
         if ($validator->fails()) {
@@ -117,42 +109,6 @@ class UserController extends Controller
 
         return $this->successResponse(
             'Password updated successfully'
-        );
-    }
-
-    public function updateNotifications(Request $request)
-    {
-        $rules = collect($this->notificationFields)
-            ->mapWithKeys(fn($field) => [
-                $field => ['sometimes', 'required', 'boolean'],
-            ])
-            ->toArray();
-
-        $validator = Validator::make($request->all(), $rules);
-
-        if ($validator->fails()) {
-            return $this->errorResponse(
-                'Validation failed',
-                422,
-                $validator->errors()
-            );
-        }
-
-        $data = $validator->validated();
-
-        if (empty($data)) {
-            return $this->errorResponse(
-                'Please provide at least one notification setting',
-                422
-            );
-        }
-
-        $user = $request->user();
-        $user->update($data);
-
-        return $this->successResponse(
-            'Notification settings updated successfully',
-            $user->fresh()->only($this->notificationFields)
         );
     }
 }

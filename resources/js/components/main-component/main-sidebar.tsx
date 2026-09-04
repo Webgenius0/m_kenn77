@@ -31,6 +31,14 @@ const items: MenuItem[] = [
         icon: 'material-symbols-outlined menu-icon',
         children: [
             {
+                title: 'About Us',
+                href: '/admin/about-us',
+            },
+            {
+                title: 'Gallery',
+                href: '/admin/galleries',
+            },
+            {
                 title: 'FAQs',
                 href: '/admin/faq/list',
             },

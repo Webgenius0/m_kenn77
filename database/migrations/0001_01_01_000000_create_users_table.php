@@ -18,8 +18,14 @@ return new class extends Migration
             $table->string('last_name')->nullable();
             $table->string('username')->nullable();
             $table->string('email')->unique();
+            $table->string('phone_number')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->text('avatar')->nullable();
+            $table->string('role')->default('user');
+            $table->text('two_factor_secret')->nullable();
+            $table->text('two_factor_recovery_codes')->nullable();
+            $table->timestamp('two_factor_confirmed_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
