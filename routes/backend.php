@@ -5,6 +5,7 @@ use App\Http\Controllers\Web\Backend\ContactController;
 use App\Http\Controllers\Web\Backend\AboutUsController;
 use App\Http\Controllers\Web\Backend\CouponController;
 use App\Http\Controllers\Web\Backend\DashboardController;
+use App\Http\Controllers\Web\Backend\DestinationTypeController;
 use App\Http\Controllers\Web\Backend\DynamicPageController;
 use App\Http\Controllers\Web\Backend\FaqController;
 use App\Http\Controllers\Web\Backend\GalleryController;
@@ -18,6 +19,14 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard.index');
+
+    // Destination type management routes
+    Route::get('/destination-types', [DestinationTypeController::class, 'index'])->name('admin.destination-types.index');
+    Route::get('/destination-types/create', [DestinationTypeController::class, 'create'])->name('admin.destination-types.create');
+    Route::post('/destination-types', [DestinationTypeController::class, 'store'])->name('admin.destination-types.store');
+    Route::get('/destination-types/{destinationType}/edit', [DestinationTypeController::class, 'edit'])->name('admin.destination-types.edit');
+    Route::put('/destination-types/{destinationType}', [DestinationTypeController::class, 'update'])->name('admin.destination-types.update');
+    Route::delete('/destination-types/{destinationType}', [DestinationTypeController::class, 'destroy'])->name('admin.destination-types.destroy');
 
     // User APIs controller
     Route::get('/users', [UserController::class, 'index'])->name('admin.user.index');

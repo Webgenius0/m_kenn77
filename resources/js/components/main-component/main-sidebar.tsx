@@ -65,6 +65,18 @@ const items: MenuItem[] = [
         ],
     },
     {
+        title: 'Properties',
+        href: '',
+        icon_name: 'location_city',
+        icon: 'material-symbols-outlined menu-icon',
+        children: [
+            {
+                title: 'Destination Types',
+                href: '/admin/destination-types',
+            },
+        ],
+    },
+    {
         title: 'Queue Management',
         href: '',
         icon_name: 'queue',
