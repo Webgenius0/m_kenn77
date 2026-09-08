@@ -3,10 +3,11 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { initializeTheme } from '@/hooks/use-appearance';
 import AppLayout from '@/layouts/app-layout';
 import AuthLayout from '@/layouts/auth-layout';
+import LoginLayout from '@/layouts/login-layout';
 import SettingsLayout from '@/layouts/settings/layout';
 import MainLayout from './layouts/main-layout';
 import 'react-quill-new/dist/quill.snow.css';
- 
+
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
 createInertiaApp({
@@ -18,6 +19,9 @@ createInertiaApp({
             case name.startsWith('frontend/'):
                 return null;
             case name.startsWith('auth/'):
+                if (name === 'auth/login') {
+                    return LoginLayout;
+                }
                 return AuthLayout;
             // case name.startsWith('settings/'):
             //     return [AppLayout, SettingsLayout];

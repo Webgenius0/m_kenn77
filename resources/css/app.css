@@ -108,7 +108,45 @@
 }
 
 .custom-input {
-    
+
+}
+
+.login-shell {
+    display: grid;
+    min-height: 100svh;
+    grid-template-columns: minmax(0, 1.1fr) minmax(460px, 0.9fr);
+}
+
+.login-hero {
+    min-height: 100svh;
+}
+
+.login-form-panel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    padding: 3rem 4rem;
+}
+
+.login-form-inner {
+    width: 100%;
+    max-width: 430px;
+}
+
+@media (max-width: 900px) {
+    .login-shell {
+        display: block;
+    }
+
+    .login-hero {
+        min-height: 390px;
+    }
+
+    .login-form-panel {
+        min-height: 610px;
+        padding: 3rem 1.5rem;
+    }
 }
 
 .dark {

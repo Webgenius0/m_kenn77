@@ -27,34 +27,34 @@ export default function Login({ status, canResetPassword }: Props) {
             <Form
                 {...store.form()}
                 resetOnSuccess={['password']}
-                className="flex flex-col gap-6"
+                className="flex flex-col gap-7"
             >
                 {({ processing, errors }) => (
                     <>
                         <div className="grid gap-6">
                             <div className="grid gap-2">
-                                <Label htmlFor="email">Email address</Label>
+                                <Label htmlFor="email" className="text-[11px] font-semibold tracking-[0.12em] text-[#52636a] uppercase">Email address</Label>
                                 <Input
                                     id="email"
                                     type="email"
-                                    className=' rounded-5'
+                                    className="h-12 rounded-xl border-[#d8d6d0] bg-white px-4 text-sm shadow-none transition-colors focus:border-[#b18b50] focus:ring-[#b18b50]/20"
                                     name="email"
                                     required
                                     autoFocus
                                     tabIndex={1}
                                     autoComplete="email"
-                                    placeholder="email@example.com"
+                                    placeholder="you@example.com"
                                 />
                                 <InputError message={errors.email} />
                             </div>
 
                             <div className="grid gap-2">
                                 <div className="flex items-center">
-                                    <Label htmlFor="password">Password</Label>
+                                    <Label htmlFor="password" className="text-[11px] font-semibold tracking-[0.12em] text-[#52636a] uppercase">Password</Label>
                                     {canResetPassword && (
                                         <TextLink
                                             href={request()}
-                                            className="ml-auto text-sm"
+                                            className="ml-auto text-xs font-medium text-[#a0783d] no-underline hover:underline"
                                             tabIndex={5}
                                         >
                                             Forgot password?
@@ -64,7 +64,7 @@ export default function Login({ status, canResetPassword }: Props) {
                                 <PasswordInput
                                     id="password"
                                     name="password"
-                                    className='custom-input rounded-5'
+                                    className="custom-input h-12 rounded-xl border-[#d8d6d0] bg-white px-4 text-sm shadow-none focus:border-[#b18b50] focus:ring-[#b18b50]/20"
                                     required
                                     tabIndex={2}
                                     autoComplete="current-password"
@@ -79,12 +79,12 @@ export default function Login({ status, canResetPassword }: Props) {
                                     name="remember"
                                     tabIndex={3}
                                 />
-                                <Label htmlFor="remember" className='ms-2'>Remember me</Label>
+                                <Label htmlFor="remember" className="ms-2 text-sm text-[#718087]">Remember me</Label>
                             </div>
 
                             <Button
                                 type="submit"
-                                className="mt-4 w-full rounded-5"
+                                className="mt-3 h-12 w-full rounded-xl border-0 bg-[#183d43] text-sm font-semibold text-white shadow-[0_12px_24px_rgba(24,61,67,0.18)] transition-all hover:bg-[#24545a] hover:shadow-[0_14px_28px_rgba(24,61,67,0.24)]"
                                 tabIndex={4}
                                 disabled={processing}
                                 data-test="login-button"
