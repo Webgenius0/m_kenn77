@@ -74,6 +74,10 @@ const items: MenuItem[] = [
                 title: 'Destination Types',
                 href: '/admin/destination-types',
             },
+            {
+                title: 'Amenities',
+                href: '/admin/amenities',
+            },
         ],
     },
     {

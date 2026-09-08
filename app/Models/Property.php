@@ -41,4 +41,14 @@ class Property extends Model
         return $this->hasMany(PropertyRule::class);
     }
 
+    public function images()
+    {
+        return $this->hasMany(PropertyImage::class);
+    }
+
+    public function rooms()
+    {
+        return $this->hasMany(PropertyRoom::class);
+    }
+
 }

@@ -16,15 +16,6 @@ Route::get('/logout', [PageController::class, 'logout'])->name('frontend.terms.l
 require __DIR__ . '/backend.php';
 require __DIR__ . '/settings.php';
 
-Route::get('/run-npm-build', function () {
-    $result = Process::path(base_path())->run('npm run build');
-
-    return response()->json([
-        'successful' => $result->successful(),
-        'output' => $result->output(),
-        'error' => $result->errorOutput(),
-    ]);
-});
 
 Route::get('/run-migrate', function () {
     // Run the database migration

@@ -35,7 +35,7 @@ class User extends Authenticatable implements PasskeyUser
         'remember_token',
     ];
 
-    protected $hidden = ['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'];
+    protected $hidden = ['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token', 'provider', 'provider_id'];
 
     /**
      * Get the attributes that should be cast.

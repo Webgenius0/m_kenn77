@@ -4,7 +4,9 @@ namespace App\Http\Controllers\API\Settings;
 
 use App\Concerns\ApiResponse;
 use App\Http\Controllers\Controller;
+use App\Models\AboutUs;
 use App\Models\Faq;
+use App\Models\Gallery;
 use App\Models\Page;
 use App\Models\Setting;
 use GuzzleHttp\Psr7\Request;
@@ -66,6 +68,28 @@ class SettingsController extends Controller
         return $this->successResponse(
             $page->title,
             $page,
+            200
+        );
+    }
+
+    public function aboutUs()
+    {
+        $aboutUs = AboutUs::first();
+
+        return $this->successResponse(
+            'About Us Retrieved Successfully',
+            $aboutUs,
+            200
+        );
+    }
+
+    public function GalleryImages()
+    {
+        $galleryImages = Gallery::all();
+
+        return $this->successResponse(
+            'Gallery Images Retrieved Successfully',
+            $galleryImages,
             200
         );
     }

@@ -11,10 +11,15 @@ use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\ResetPasswordRequest;
 use App\Models\User;
 use App\Services\Auth\AuthService;
+use Exception;
 use Ichtrojan\Otp\Otp;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+use Laravel\Socialite\Facades\Socialite;
 
 class AuthApiController extends Controller
 {
@@ -187,5 +192,57 @@ class AuthApiController extends Controller
             null,
             200
         );
+    }
+
+    public function socialLogin(Request $request)
+    {
+        $request->validate([
+            'provider' => 'required|in:google',
+            'token' => 'required',
+        ]);
+
+        try {
+            if ($request->provider === 'google') {
+                $socialUser = Socialite::driver('google')->stateless()->userFromToken($request->token);
+            }else {
+                return $this->error('Unsupported provider', 422);
+            }
+
+            if ($socialUser) {
+                $user = User::where('email', $socialUser->email)->first();
+                if (!$user) {
+                    $password = Str::random(16);
+
+                    $user = User::create([
+                        'first_name'        => $socialUser->getName() ?? "First",
+                        'last_name'         => $socialUser->getLastName() ?? "Last",
+                        'email'             => $socialUser->email,
+                        'password'          => Hash::make($password),
+                        'avatar'            => $socialUser->getAvatar() ?? null,
+                        'email_verified_at' => now(),
+                        'provider'          => $request->provider,
+                        'provider_id'       => $socialUser->getId() ?? null,
+                        'role'              => 'user',
+                    ]);
+                }
+                Auth::login($user);
+                $token = $user->createToken('AuthToken')->plainTextToken;
+
+                return response()->json([
+                    'status' => 200,
+                    'message' => 'Login Successful',
+                    'token_type' => 'Bearer',
+                    'token' => $token,
+                    'data' => $user
+                ]);
+
+            } else {
+
+                return $this->error('Invalid or Expired Token', 401);
+            }
+        } catch (Exception $e) {
+            \Log::error('Social login failed: ' . $e->getMessage());
+            return $this->error('Something went wrong', 500);
+        }
     }
 }

@@ -3,6 +3,7 @@
 // use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Web\Backend\ContactController;
 use App\Http\Controllers\Web\Backend\AboutUsController;
+use App\Http\Controllers\Web\Backend\AmenityController;
 use App\Http\Controllers\Web\Backend\CouponController;
 use App\Http\Controllers\Web\Backend\DashboardController;
 use App\Http\Controllers\Web\Backend\DestinationTypeController;
@@ -27,6 +28,14 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::get('/destination-types/{destinationType}/edit', [DestinationTypeController::class, 'edit'])->name('admin.destination-types.edit');
     Route::put('/destination-types/{destinationType}', [DestinationTypeController::class, 'update'])->name('admin.destination-types.update');
     Route::delete('/destination-types/{destinationType}', [DestinationTypeController::class, 'destroy'])->name('admin.destination-types.destroy');
+
+    // Amenity management routes
+    Route::get('/amenities', [AmenityController::class, 'index'])->name('admin.amenities.index');
+    Route::get('/amenities/create', [AmenityController::class, 'create'])->name('admin.amenities.create');
+    Route::post('/amenities', [AmenityController::class, 'store'])->name('admin.amenities.store');
+    Route::get('/amenities/{amenity}/edit', [AmenityController::class, 'edit'])->name('admin.amenities.edit');
+    Route::put('/amenities/{amenity}', [AmenityController::class, 'update'])->name('admin.amenities.update');
+    Route::delete('/amenities/{amenity}', [AmenityController::class, 'destroy'])->name('admin.amenities.destroy');
 
     // User APIs controller
     Route::get('/users', [UserController::class, 'index'])->name('admin.user.index');

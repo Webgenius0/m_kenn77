@@ -10,4 +10,6 @@ Route::controller(SettingsController::class)->prefix('settings')->group(function
     Route::get('system', 'systemSetting');
     Route::get('faqs', 'faqList');
     Route::get('page/{slug}', 'dynamicPage');
+    Route::get('about-us', 'aboutUs');
+    Route::get('gallery', 'GalleryImages');
 });

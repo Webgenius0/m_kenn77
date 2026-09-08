@@ -10,6 +10,7 @@ Route::controller(AuthApiController::class)->prefix('auth')->middleware('throttl
     Route::post('verify/register', 'verifyRegister');
     Route::post('resend-otp/register', 'registerResendOtp');
     Route::post('login', 'login');
+    Route::post('social/login', 'socialLogin');
     Route::post('logout', 'logout')->middleware('auth:sanctum');
     Route::post('forgetpass', 'forgotPassword');
     Route::post('verify-email', 'verifyForgetPass');
