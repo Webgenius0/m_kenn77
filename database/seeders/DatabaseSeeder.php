@@ -24,5 +24,6 @@ class DatabaseSeeder extends Seeder
         $this->call(FaqSeeder::class);
         $this->call(\Database\Seeders\DestinationTypeSeeder::class);
         $this->call(\Database\Seeders\AmenitySeeder::class);
+        $this->call(\Database\Seeders\RuleSeeder::class);
     }
 }

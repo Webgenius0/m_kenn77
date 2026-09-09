@@ -71,12 +71,20 @@ const items: MenuItem[] = [
         icon: 'material-symbols-outlined menu-icon',
         children: [
             {
+                title: 'Properties',
+                href: '/admin/properties',
+            },
+            {
                 title: 'Destination Types',
                 href: '/admin/destination-types',
             },
             {
                 title: 'Amenities',
                 href: '/admin/amenities',
+            },
+            {
+                title: 'Rules',
+                href: '/admin/rules',
             },
         ],
     },

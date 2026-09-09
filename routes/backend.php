@@ -12,6 +12,8 @@ use App\Http\Controllers\Web\Backend\FaqController;
 use App\Http\Controllers\Web\Backend\GalleryController;
 use App\Http\Controllers\Web\Backend\LogController;
 use App\Http\Controllers\Web\Backend\ProfileController;
+use App\Http\Controllers\Web\Backend\PropertyController;
+use App\Http\Controllers\Web\Backend\RuleController;
 use App\Http\Controllers\Web\Backend\QueueController;
 use App\Http\Controllers\Web\Backend\SystemSettingsController;
 use App\Http\Controllers\Web\Backend\UserController;
@@ -36,6 +38,22 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::get('/amenities/{amenity}/edit', [AmenityController::class, 'edit'])->name('admin.amenities.edit');
     Route::put('/amenities/{amenity}', [AmenityController::class, 'update'])->name('admin.amenities.update');
     Route::delete('/amenities/{amenity}', [AmenityController::class, 'destroy'])->name('admin.amenities.destroy');
+
+    // Rule management routes
+    Route::get('/rules', [RuleController::class, 'index'])->name('admin.rules.index');
+    Route::get('/rules/create', [RuleController::class, 'create'])->name('admin.rules.create');
+    Route::post('/rules', [RuleController::class, 'store'])->name('admin.rules.store');
+    Route::get('/rules/{rule}/edit', [RuleController::class, 'edit'])->name('admin.rules.edit');
+    Route::put('/rules/{rule}', [RuleController::class, 'update'])->name('admin.rules.update');
+    Route::delete('/rules/{rule}', [RuleController::class, 'destroy'])->name('admin.rules.destroy');
+
+    // Property management routes
+    Route::get('/properties', [PropertyController::class, 'index'])->name('admin.properties.index');
+    Route::get('/properties/create', [PropertyController::class, 'create'])->name('admin.properties.create');
+    Route::post('/properties', [PropertyController::class, 'store'])->name('admin.properties.store');
+    Route::get('/properties/{property}/edit', [PropertyController::class, 'edit'])->name('admin.properties.edit');
+    Route::put('/properties/{property}', [PropertyController::class, 'update'])->name('admin.properties.update');
+    Route::delete('/properties/{property}', [PropertyController::class, 'destroy'])->name('admin.properties.destroy');
 
     // User APIs controller
     Route::get('/users', [UserController::class, 'index'])->name('admin.user.index');

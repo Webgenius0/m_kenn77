@@ -11,11 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('property_rules', function (Blueprint $table) {
+        Schema::create('rules', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('property_id')->constrained('properties')->cascadeOnDelete();
             $table->string('rule_type');
-            $table->string('value')->nullable();
             $table->string('icon')->nullable();
             $table->timestamps();
         });
@@ -26,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('property_rules');
+        Schema::dropIfExists('rules');
     }
 };

@@ -30,15 +30,20 @@ class Property extends Model
         'airbnb_property_url',
     ];
 
+    public function destinationType()
+    {
+        return $this->belongsTo(DestinationType::class);
+    }
+
     public function amenities()
     {
-        return $this->belongsToMany(Amenity::class)->withPivot('quantity')
+        return $this->belongsToMany(Amenity::class, 'property_amenity')->withPivot('quantity')
             ->withTimestamps();
     }
 
     public function rules()
     {
-        return $this->hasMany(PropertyRule::class);
+        return $this->belongsToMany(Rule::class, 'property_rule')->withPivot('value')->withTimestamps();
     }
 
     public function images()

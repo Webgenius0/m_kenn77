@@ -8,7 +8,7 @@ class PropertyImage extends Model
 {
     protected $fillable = [
         'property_id',
-        'image',
+        'image_path',
         'is_primary',
     ];
 
@@ -16,7 +16,7 @@ class PropertyImage extends Model
         'is_primary' => 'boolean',
     ];
 
-    public function getImageAttribute($value)
+    public function getImagePathAttribute($value)
     {
         return $value ? asset('storage/' . $value) : null;
     }
