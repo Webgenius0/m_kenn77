@@ -10,18 +10,18 @@ class AmenitySeeder extends Seeder
     public function run(): void
     {
         $amenities = [
-            ['name' => 'Bedroom', 'icon' => '/SVG Icons/Bed.svg', 'is_active' => true],
-            ['name' => 'Bathroom', 'icon' => '/SVG Icons/Bathtub.svg', 'is_active' => true],
-            ['name' => 'Air Conditioner', 'icon' => '/SVG Icons/tabler-icon-air-conditioning-disabled.svg', 'is_active' => true],
-            ['name' => 'Wi-Fi', 'icon' => '/SVG Icons/WifiHigh.svg', 'is_active' => true],
-            ['name' => 'Kitchen', 'icon' => '/SVG Icons/tabler-icon-tools-kitchen-3.svg', 'is_active' => true],
-            ['name' => 'Washing Machine', 'icon' => '/SVG Icons/WashingMachine.svg', 'is_active' => true],
-            ['name' => 'Oven', 'icon' => '/SVG Icons/hugeicons_oven.svg', 'is_active' => true],
-            ['name' => 'Refrigerator', 'icon' => '/SVG Icons/tabler-icon-fridge.svg', 'is_active' => true],
-            ['name' => 'Television', 'icon' => '/SVG Icons/TelevisionSimple.svg', 'is_active' => true],
-            ['name' => 'Gym', 'icon' => '/SVG Icons/iconsax-ai-weight.svg', 'is_active' => true],
-            ['name' => 'Swimming Pool', 'icon' => '/SVG Icons/SwimmingPool.svg', 'is_active' => true],
-            ['name' => 'Parking Area', 'icon' => '/SVG Icons/LetterCircleP.svg', 'is_active' => true],
+            ['name' => 'Bedroom', 'icon' => '/icons/Bed.svg', 'is_active' => true],
+            ['name' => 'Bathroom', 'icon' => '/icons/Bathtub.svg', 'is_active' => true],
+            ['name' => 'Air Conditioner', 'icon' => '/icons/tabler-icon-air-conditioning-disabled.svg', 'is_active' => true],
+            ['name' => 'Wi-Fi', 'icon' => '/icons/WifiHigh.svg', 'is_active' => true],
+            ['name' => 'Kitchen', 'icon' => '/icons/tabler-icon-tools-kitchen-3.svg', 'is_active' => true],
+            ['name' => 'Washing Machine', 'icon' => '/icons/WashingMachine.svg', 'is_active' => true],
+            ['name' => 'Oven', 'icon' => '/icons/hugeicons_oven.svg', 'is_active' => true],
+            ['name' => 'Refrigerator', 'icon' => '/icons/tabler-icon-fridge.svg', 'is_active' => true],
+            ['name' => 'Television', 'icon' => '/icons/TelevisionSimple.svg', 'is_active' => true],
+            ['name' => 'Gym', 'icon' => '/icons/iconsax-ai-weight.svg', 'is_active' => true],
+            ['name' => 'Swimming Pool', 'icon' => '/icons/SwimmingPool.svg', 'is_active' => true],
+            ['name' => 'Parking Area', 'icon' => '/icons/LetterCircleP.svg', 'is_active' => true],
         ];
 
         foreach ($amenities as $amenity) {

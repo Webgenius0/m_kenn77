@@ -16,6 +16,11 @@ class Amenity extends Model
         'is_active' => 'boolean',
     ];
 
+    public function getIconAttribute($value): ?string
+    {
+        return $value ? asset($value) : null;
+    }
+
     public function properties()
     {
         return $this->belongsToMany(Property::class, 'property_amenity')->withPivot('quantity')

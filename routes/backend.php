@@ -51,6 +51,7 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::get('/properties', [PropertyController::class, 'index'])->name('admin.properties.index');
     Route::get('/properties/create', [PropertyController::class, 'create'])->name('admin.properties.create');
     Route::post('/properties', [PropertyController::class, 'store'])->name('admin.properties.store');
+    Route::get('/properties/{property}', [PropertyController::class, 'show'])->name('admin.properties.show');
     Route::get('/properties/{property}/edit', [PropertyController::class, 'edit'])->name('admin.properties.edit');
     Route::put('/properties/{property}', [PropertyController::class, 'update'])->name('admin.properties.update');
     Route::delete('/properties/{property}', [PropertyController::class, 'destroy'])->name('admin.properties.destroy');

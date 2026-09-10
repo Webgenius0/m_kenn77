@@ -85,6 +85,9 @@ export default function Index({ properties }: { properties: Property[] }) {
                                             </td>
                                             <td>
                                                 <div className="d-flex justify-content-end" style={{ gap: "12px" }}>
+                                                    <Link href={`/admin/properties/${property.id}`} className="bg-transparent p-0 border-0 hover-text-primary" aria-label="View property">
+                                                        <i className="material-symbols-outlined fs-16 fw-normal text-primary">visibility</i>
+                                                    </Link>
                                                     <Link href={`/admin/properties/${property.id}/edit`} className="bg-transparent p-0 border-0 hover-text-success" aria-label="Edit property">
                                                         <i className="material-symbols-outlined fs-16 fw-normal text-primary">Edit</i>
                                                     </Link>

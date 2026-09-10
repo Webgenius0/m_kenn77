@@ -11,6 +11,11 @@ class Rule extends Model
         'icon',
     ];
 
+    public function getIconAttribute($value): ?string
+    {
+        return $value ? asset($value) : null;
+    }
+
     public function properties()
     {
         return $this->belongsToMany(Property::class, 'property_rule')->withPivot('value')->withTimestamps();

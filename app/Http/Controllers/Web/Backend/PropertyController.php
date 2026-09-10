@@ -31,6 +31,13 @@ class PropertyController extends Controller
         ]);
     }
 
+    public function show(Property $property)
+    {
+        return Inertia::render('backend/properties/show', [
+            'property' => $property->load(['destinationType', 'amenities', 'rules', 'rooms', 'images']),
+        ]);
+    }
+
     public function store(Request $request)
     {
         $this->validateChildData($request);

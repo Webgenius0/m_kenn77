@@ -56,7 +56,7 @@ class AmenityController extends Controller
 
     public function destroy(Amenity $amenity)
     {
-        if ($amenity->icon && ! Str::startsWith($amenity->icon, '/SVG Icons/')) {
+        if ($amenity->icon && ! Str::startsWith($amenity->icon, '/icons/')) {
             Storage::disk('public')->delete($amenity->icon);
         }
 
@@ -71,7 +71,7 @@ class AmenityController extends Controller
             return null;
         }
 
-        if (Str::startsWith($icon, '/SVG Icons/') || Str::startsWith($icon, 'http://') || Str::startsWith($icon, 'https://')) {
+        if (Str::startsWith($icon, '/icons/') || Str::startsWith($icon, 'http://') || Str::startsWith($icon, 'https://')) {
             return $icon;
         }
 

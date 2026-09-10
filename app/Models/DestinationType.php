@@ -18,4 +18,9 @@ class DestinationType extends Model
     {
         return $value ? asset('storage/' . $value) : null;
     }
+
+    public function properties()
+    {
+        return $this->hasMany(Property::class);
+    }
 }

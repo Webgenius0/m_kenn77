@@ -55,7 +55,7 @@ class RuleController extends Controller
 
     public function destroy(Rule $rule)
     {
-        if ($rule->icon && ! Str::startsWith($rule->getRawOriginal('icon'), ['/SVG Icons/', 'http://', 'https://'])) {
+        if ($rule->icon && ! Str::startsWith($rule->getRawOriginal('icon'), ['/icons/', 'http://', 'https://'])) {
             Storage::disk('public')->delete($rule->getRawOriginal('icon'));
         }
 
@@ -70,7 +70,7 @@ class RuleController extends Controller
             return null;
         }
 
-        if (Str::startsWith($icon, ['/SVG Icons/', 'http://', 'https://'])) {
+        if (Str::startsWith($icon, ['/icons/', 'http://', 'https://'])) {
             return $icon;
         }
 
