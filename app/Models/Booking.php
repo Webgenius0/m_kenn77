@@ -10,6 +10,8 @@ class Booking extends Model
         'booking_number',
         'user_id',
         'property_id',
+        'coupon_id',
+        'coupon_code',
         'check_in',
         'check_out',
         'adults',
