@@ -9,7 +9,8 @@ use App\Models\Faq;
 use App\Models\Gallery;
 use App\Models\Page;
 use App\Models\Setting;
-use GuzzleHttp\Psr7\Request;
+use Illuminate\Http\Request;
+
 
 class SettingsController extends Controller
 {
@@ -83,9 +84,10 @@ class SettingsController extends Controller
         );
     }
 
-    public function GalleryImages()
+    public function GalleryImages(Request $request)
     {
-        $galleryImages = Gallery::all();
+        $perPage = $request->input('per_page', 6);
+        $galleryImages = Gallery::paginate($perPage);
 
         return $this->successResponse(
             'Gallery Images Retrieved Successfully',
