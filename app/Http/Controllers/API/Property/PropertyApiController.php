@@ -175,11 +175,21 @@ class PropertyApiController extends Controller
                 ];
             })->values(),
             'reviews' => [
-                'rating' => 4.5,
-                'name' => 'Marcus Westervelt',
-                'comment' => 'Booked direct and saved almost $200 versus Airbnb. The house was even brighter than the photos and check-in took thirty seconds.',
-                'date' => '1 month ago',
-                'image' => null,
+                [
+                    'rating' => 4.5,
+                    'name' => 'Marcus Westervelt',
+                    'comment' => 'Booked direct and saved almost $200 versus Airbnb. The house was even brighter than the photos and check-in took thirty seconds.',
+                    'date' => '1 month ago',
+                    'image' => null,
+                ],
+                [
+                    'rating' => 4.8,
+                    'name' => 'Marcus Westervelt',
+                    'comment' => 'The plunge pool at sunset is worth the trip alone. The team answered every message within minutes no middleman, no hold music.',
+                    'date' => '10 days ago',
+                    'image' => null,
+                ]
+
             ],
         ];
     }
