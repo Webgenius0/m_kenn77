@@ -18,16 +18,9 @@ class PropertyApiController extends Controller
             $properties = Property::query()
                 ->with('images')
                 ->where('is_active', true)
-                ->when($request->filled('destination'), function ($query) use ($request) {
-                    $destination = $request->input('destination');
-
-
-                    $query->whereHas('destinationType', function ($destinationQuery) use ($destination) {
-                        $destinationQuery->where(function ($subQuery) use ($destination) {
-                            $subQuery->where('slug', $destination)
-                                ->orWhere('name', $destination);
-                        });
-                    });
+                ->when($request->filled('location'), function ($query) use ($request) {
+                    $location = $request->input('location');
+                    $query->where('location', $location);
                 })
                 ->latest()
                 ->paginate($request->input('per_page', 12));
@@ -37,7 +30,7 @@ class PropertyApiController extends Controller
                     'id'                => $property->id,
                     'name'              => $property->name,
                     'slug'              => $property->slug,
-                    'address'           => $property->address,
+                    'location'          => $property->location,
                     'price_per_night'   => $property->price_per_night,
                     'max_guests'        => $property->max_guests,
                     'bedrooms'          => $property->bedrooms,
@@ -136,11 +129,8 @@ class PropertyApiController extends Controller
             'title'             => $property->title,
             'description'       => $property->description,
             'property_type'     => $property->property_type,
-            'country'           => $property->country,
-            'state'             => $property->state,
-            'city'              => $property->city,
+            'location'          => $property->location,
             'address'           => $property->address,
-            'postal_code'       => $property->postal_code,
             'latitude'          => $property->latitude,
             'longitude'         => $property->longitude,
             'price_per_night'   => $property->price_per_night,

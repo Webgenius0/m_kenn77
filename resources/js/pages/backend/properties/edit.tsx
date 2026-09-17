@@ -15,11 +15,8 @@ interface Property {
   title?: string | null;
   description?: string | null;
   property_type?: string | null;
-  country?: string | null;
-  state?: string | null;
-  city?: string | null;
+  location?: string | null;
   address?: string | null;
-  postal_code?: string | null;
   latitude?: string | number | null;
   longitude?: string | number | null;
   price_per_night?: string | number | null;
@@ -42,11 +39,8 @@ interface PropertyForm {
   title: string;
   description: string;
   property_type: string;
-  country: string;
-  state: string;
-  city: string;
+  location: string;
   address: string;
-  postal_code: string;
   latitude: string;
   longitude: string;
   price_per_night: string;
@@ -83,11 +77,8 @@ export default function Edit({ property, destinationTypes, amenities, rules }: {
     title: property.title || "",
     description: property.description || "",
     property_type: property.property_type || "entire_unit",
-    country: property.country || "",
-    state: property.state || "",
-    city: property.city || "",
+    location: property.location || "",
     address: property.address || "",
-    postal_code: property.postal_code || "",
     latitude: property.latitude !== null && property.latitude !== undefined ? String(property.latitude) : "",
     longitude: property.longitude !== null && property.longitude !== undefined ? String(property.longitude) : "",
     price_per_night: property.price_per_night !== null && property.price_per_night !== undefined ? String(property.price_per_night) : "",
@@ -214,28 +205,21 @@ export default function Edit({ property, destinationTypes, amenities, rules }: {
               <div className="mb-3"><h5 className="mb-1">Location and type</h5><p className="text-muted mb-0">Help guests find and understand the property.</p></div>
               <div className="mb-20">
                 <label className="label fs-16 mb-2">Property Type</label>
-                <select className="form-select" value={data.property_type} onChange={(e) => setData('property_type', e.target.value)}>
+                <select className="form-select" value={data.property_type || ""} onChange={(e) => setData('property_type', e.target.value)}>
+                  <option value="">Select property type</option>
                   <option value="entire_unit">Entire Unit</option>
                   <option value="private_room">Private Room</option>
                   <option value="shared_room">Shared Room</option>
                 </select>
               </div>
               <div className="row g-3">
-                <div className="col-md-6 mb-20">
-                  <label className="label fs-16 mb-2">Country</label>
-                  <input className="form-control" placeholder="e.g. United States" value={data.country} onChange={(e) => setData('country', e.target.value)} />
-                </div>
-                <div className="col-md-6 mb-20">
-                  <label className="label fs-16 mb-2">State</label>
-                  <input className="form-control" placeholder="e.g. California" value={data.state} onChange={(e) => setData('state', e.target.value)} />
-                </div>
-                <div className="col-md-6 mb-20">
-                  <label className="label fs-16 mb-2">City</label>
-                  <input className="form-control" placeholder="e.g. San Diego" value={data.city} onChange={(e) => setData('city', e.target.value)} />
-                </div>
-                <div className="col-md-6 mb-20">
-                  <label className="label fs-16 mb-2">Postal Code</label>
-                  <input className="form-control" placeholder="e.g. 92101" value={data.postal_code} onChange={(e) => setData('postal_code', e.target.value)} />
+                <div className="col-12 mb-20">
+                  <label className="label fs-16 mb-2">Location</label>
+                    <select className="form-select" value={data.location || ""} onChange={(e) => setData('location', e.target.value)}>
+                    <option value="">Select location</option>
+                    <option value="Columbus, GA">Columbus, GA</option>
+                    <option value="Phenix City, AL">Phenix City, AL</option>
+                </select>
                 </div>
                 <div className="col-12 mb-20">
                   <label className="label fs-16 mb-2">Address</label>

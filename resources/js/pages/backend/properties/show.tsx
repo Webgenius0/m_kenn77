@@ -14,11 +14,8 @@ interface Property {
   title?: string | null;
   description?: string | null;
   property_type?: string | null;
-  country?: string | null;
-  state?: string | null;
-  city?: string | null;
+  location?: string | null;
   address?: string | null;
-  postal_code?: string | null;
   latitude?: string | number | null;
   longitude?: string | number | null;
   price_per_night?: string | number | null;
@@ -134,21 +131,9 @@ export default function Show({ property }: { property: Property }) {
                     <label className="label fs-14 text-muted mb-2">Title</label>
                     <div className="form-control bg-light">{property.title || "—"}</div>
                   </div>
-                  <div className="col-md-6">
-                    <label className="label fs-14 text-muted mb-2">City</label>
-                    <div className="form-control bg-light">{property.city || "—"}</div>
-                  </div>
-                  <div className="col-md-6">
-                    <label className="label fs-14 text-muted mb-2">Country</label>
-                    <div className="form-control bg-light">{property.country || "—"}</div>
-                  </div>
-                  <div className="col-md-6">
-                    <label className="label fs-14 text-muted mb-2">State</label>
-                    <div className="form-control bg-light">{property.state || "—"}</div>
-                  </div>
-                  <div className="col-md-6">
-                    <label className="label fs-14 text-muted mb-2">Postal code</label>
-                    <div className="form-control bg-light">{property.postal_code || "—"}</div>
+                  <div className="col-md-12">
+                    <label className="label fs-14 text-muted mb-2">Location</label>
+                    <div className="form-control bg-light">{property.location || "—"}</div>
                   </div>
                   <div className="col-md-12">
                     <label className="label fs-14 text-muted mb-2">Address</label>

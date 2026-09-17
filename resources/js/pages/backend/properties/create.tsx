@@ -13,11 +13,8 @@ interface PropertyForm {
   title: string;
   description: string;
   property_type: string;
-  country: string;
-  state: string;
-  city: string;
+  location: string;
   address: string;
-  postal_code: string;
   latitude: string;
   longitude: string;
   price_per_night: string;
@@ -40,7 +37,7 @@ export default function Create({ destinationTypes, amenities, rules }: { destina
   const [imageInputKey, setImageInputKey] = useState(0);
   const { data, setData, post, processing, errors } = useForm<PropertyForm>({
     destination_type_id: "", hospitable_property_id: "", name: "", title: "", description: "",
-    property_type: "entire_unit", country: "", state: "", city: "", address: "", postal_code: "",
+    property_type: "entire_unit", location: "", address: "",
     latitude: "", longitude: "", price_per_night: "", max_guests: "", bedrooms: "", bathrooms: "",
     is_active: true, is_featured: false, airbnb_property_url: "", amenity_ids: [], amenity_quantities: [], rule_ids: [], rule_values: [],
     rooms: [], images: [], primary_image_index: "0",
@@ -109,12 +106,9 @@ export default function Create({ destinationTypes, amenities, rules }: { destina
 
             <div className="col-lg-6">
               <div className="mb-3"><h5 className="mb-1">Location and type</h5><p className="text-muted mb-0">Help guests find and understand the property.</p></div>
-              <div className="mb-20"><label className="label fs-16 mb-2">Property Type</label><select className="form-select" value={data.property_type} onChange={(e) => setData("property_type", e.target.value)}><option value="entire_unit">Entire Unit</option><option value="private_room">Private Room</option><option value="shared_room">Shared Room</option></select></div>
+              <div className="mb-20"><label className="label fs-16 mb-2">Property Type</label><select className="form-select" value={data.property_type || ""} onChange={(e) => setData("property_type", e.target.value)}><option value="">Select property type</option><option value="entire_unit">Entire Unit</option><option value="private_room">Private Room</option><option value="shared_room">Shared Room</option></select></div>
               <div className="row g-3">
-                <div className="col-md-6 mb-20"><label className="label fs-16 mb-2">Country</label><input className="form-control" placeholder="e.g. United States" value={data.country} onChange={(e) => setData("country", e.target.value)} /></div>
-                <div className="col-md-6 mb-20"><label className="label fs-16 mb-2">State</label><input className="form-control" placeholder="e.g. California" value={data.state} onChange={(e) => setData("state", e.target.value)} /></div>
-                <div className="col-md-6 mb-20"><label className="label fs-16 mb-2">City</label><input className="form-control" placeholder="e.g. San Diego" value={data.city} onChange={(e) => setData("city", e.target.value)} /></div>
-                <div className="col-md-6 mb-20"><label className="label fs-16 mb-2">Postal Code</label><input className="form-control" placeholder="e.g. 92101" value={data.postal_code} onChange={(e) => setData("postal_code", e.target.value)} /></div>
+                <div className="col-12 mb-20"><label className="label fs-16 mb-2">Location</label><select className="form-select" value={data.location || ""} onChange={(e) => setData("location", e.target.value)}><option value="">Select location</option><option value="Columbus, GA">Columbus, GA</option><option value="Phenix City, AL">Phenix City, AL</option></select></div>
                 <div className="col-12 mb-20"><label className="label fs-16 mb-2">Address</label><input className="form-control" placeholder="Street address" value={data.address} onChange={(e) => setData("address", e.target.value)} /></div>
                 <div className="col-md-6 mb-20"><label className="label fs-16 mb-2">Latitude</label><input className="form-control" placeholder="e.g. 32.7157" value={data.latitude} onChange={(e) => setData("latitude", e.target.value)} /></div>
                 <div className="col-md-6 mb-20"><label className="label fs-16 mb-2">Longitude</label><input className="form-control" placeholder="e.g. -117.1611" value={data.longitude} onChange={(e) => setData("longitude", e.target.value)} /></div>

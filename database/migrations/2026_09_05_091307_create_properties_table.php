@@ -20,11 +20,8 @@ return new class extends Migration
             $table->string('title')->nullable();
             $table->text('description')->nullable();
             $table->string('property_type')->nullable()->default('entire_unit');
-            $table->string('country')->nullable();
-            $table->string('state')->nullable();
-            $table->string('city')->nullable();
+            $table->string('location')->nullable();
             $table->string('address')->nullable();
-            $table->string('postal_code')->nullable();
             $table->decimal('latitude', 10, 7)->nullable();
             $table->decimal('longitude', 10, 7)->nullable();
             $table->decimal('price_per_night', 10, 2)->nullable();

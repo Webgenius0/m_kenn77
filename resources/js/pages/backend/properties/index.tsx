@@ -17,7 +17,7 @@ interface Property {
     name: string;
     slug: string;
     title: string | null;
-    city: string | null;
+    location: string | null;
     price_per_night: number | string | null;
     is_active: boolean;
     is_featured: boolean;
@@ -76,7 +76,7 @@ export default function Index({ properties }: { properties: Property[] }) {
                                                 </div>
                                             </td>
                                             <td className="text-body">{property.destination_type?.name || "-"}</td>
-                                            <td className="text-body">{property.city || "-"}</td>
+                                            <td className="text-body">{property.location || "-"}</td>
                                             <td className="text-body">{property.price_per_night ? `$${property.price_per_night}` : "-"}</td>
                                             <td>
                                                 <span className={property.is_active ? "text-success bg-success bg-opacity-10 fs-15 fw-normal d-inline-block default-badge" : "text-danger bg-danger bg-opacity-10 fs-15 fw-normal d-inline-block default-badge"}>

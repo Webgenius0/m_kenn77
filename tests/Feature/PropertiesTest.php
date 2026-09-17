@@ -39,11 +39,8 @@ class PropertiesTest extends TestCase
             'title' => 'Luxury coastal living',
             'description' => 'A beautiful villa by the sea.',
             'property_type' => 'entire_unit',
-            'country' => 'United States',
-            'state' => 'Florida',
-            'city' => 'Miami',
+            'location' => 'Miami, Florida',
             'address' => '123 Ocean Drive',
-            'postal_code' => '33101',
             'price_per_night' => '250.00',
             'max_guests' => 6,
             'bedrooms' => 3,
@@ -57,7 +54,7 @@ class PropertiesTest extends TestCase
         $this->assertDatabaseHas('properties', [
             'name' => 'Ocean Breeze Villa',
             'slug' => 'ocean-breeze-villa',
-            'city' => 'Miami',
+            'location' => 'Miami, Florida',
             'is_active' => true,
         ]);
     }
@@ -87,9 +84,7 @@ class PropertiesTest extends TestCase
             'title' => 'Island Stay',
             'description' => 'A lovely island stay.',
             'property_type' => 'entire_unit',
-            'country' => 'Spain',
-            'state' => 'Balearic Islands',
-            'city' => 'Ibiza',
+            'location' => 'Ibiza, Spain',
             'address' => '1 Island Lane',
             'is_active' => true,
         ]);
@@ -101,9 +96,7 @@ class PropertiesTest extends TestCase
             'title' => 'Mountain Retreat',
             'description' => 'A cozy mountain lodge.',
             'property_type' => 'entire_unit',
-            'country' => 'Switzerland',
-            'state' => 'Bern',
-            'city' => 'Interlaken',
+            'location' => 'Interlaken, Switzerland',
             'address' => '2 Ridge Road',
             'is_active' => true,
         ]);

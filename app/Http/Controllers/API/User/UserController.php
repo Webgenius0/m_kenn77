@@ -111,4 +111,22 @@ class UserController extends Controller
             'Password updated successfully'
         );
     }
+
+    public function deleteProfile(Request $request)
+    {
+        $user = $request->user();
+
+        // Delete the user's avatar if it exists
+        $oldAvatar = $user->getRawOriginal('avatar');
+        if ($oldAvatar && Storage::exists(str_replace('storage/', 'public/', $oldAvatar))) {
+            Storage::delete(str_replace('storage/', 'public/', $oldAvatar));
+        }
+
+        // Delete the user
+        $user->delete();
+
+        return $this->successResponse(
+            'Profile deleted successfully'
+        );
+    }
 }
