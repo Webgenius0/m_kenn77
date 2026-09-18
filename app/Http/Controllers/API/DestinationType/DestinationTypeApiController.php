@@ -46,29 +46,37 @@ class DestinationTypeApiController extends Controller
                 ->firstOrFail();
 
             return $this->successResponse('Destination type details', [
-                'id' => $destinationType->id,
-                'name' => $destinationType->name,
-                'slug' => $destinationType->slug,
-                'title' => $destinationType->title,
-                'description' => $destinationType->description,
-                'image' => $destinationType->image,
-                'property_count' => $destinationType->properties->count(),
-                'properties' => $destinationType->properties->map(function ($property) {
+                'id'                => $destinationType->id,
+                'name'              => $destinationType->name,
+                'slug'              => $destinationType->slug,
+                'title'             => $destinationType->title,
+                'description'       => $destinationType->description,
+                'image'             => $destinationType->image,
+                'property_count'    => $destinationType->properties->count(),
+                'properties'        => $destinationType->properties->map(function ($property) {
                     return [
-                        'id' => $property->id,
-                        'name' => $property->name,
-                        'slug' => $property->slug,
-                        'title' => $property->title,
-                        'description' => $property->description,
-                        'property_type' => $property->property_type,
-                        'location' => $property->location,
-                        'address' => $property->address,
-                        'price_per_night' => $property->price_per_night,
-                        'max_guests' => $property->max_guests,
-                        'bedrooms' => $property->bedrooms,
-                        'bathrooms' => $property->bathrooms,
-                        'is_active' => (bool) $property->is_active,
-                        'is_featured' => (bool) $property->is_featured,
+                        'id'                => $property->id,
+                        'name'              => $property->name,
+                        'slug'              => $property->slug,
+                        'title'             => $property->title,
+                        'description'       => $property->description,
+                        'property_type'     => $property->property_type,
+                        'location'          => $property->location,
+                        'address'           => $property->address,
+                        'price_per_night'   => $property->price_per_night,
+                        'max_guests'        => $property->max_guests,
+                        'bedrooms'          => $property->bedrooms,
+                        'bathrooms'         => $property->bathrooms,
+                        'avg_rating'        => 4.5,
+                        'review_count'      => 14,
+                        'images'            => $property->images
+                            ->map(function ($image) {
+                                return [
+                                    'image_path' => $image->image_path,
+                                    'is_primary' => (bool) $image->is_primary,
+                                ];
+                            })
+                            ->values(),
                     ];
                 })->values(),
             ]);

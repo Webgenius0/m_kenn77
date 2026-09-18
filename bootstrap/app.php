@@ -25,9 +25,6 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin' => AdminMiddleware::class,
         ]);
-        $middleware->api(append: [
-            'throttle:api',
-        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
