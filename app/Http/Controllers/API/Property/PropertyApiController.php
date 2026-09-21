@@ -72,7 +72,7 @@ class PropertyApiController extends Controller
                         'id'              => $property->id,
                         'name'            => $property->name,
                         'slug'            => $property->slug,
-                        'address'         => $property->address,
+                        'location'        => $property->location,
                         'price_per_night' => $property->price_per_night,
                         'max_guests'      => $property->max_guests,
                         'bedrooms'        => $property->bedrooms,
