@@ -59,6 +59,10 @@ const items: MenuItem[] = [
                 href: '/admin/page/cancellation-policy',
             },
             {
+                title: 'House Rules',
+                href: '/admin/page/house-rules',
+            },
+            {
                 title: 'Get In Touch',
                 href: '/admin/contacts',
             },

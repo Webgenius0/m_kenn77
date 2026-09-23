@@ -4,8 +4,23 @@ import DashboardChart from '../../widget/chart';
 import TimeLineChart from '../../widget/timeline-chart';
 
 type BookingView = 'week' | 'month';
+type Tenant = { id: number; name: string | null; avatar: string | null };
+type FeaturedProperty = {
+    id: number;
+    name: string;
+    location: string | null;
+    image: string | null;
+    bookings_count: number;
+    revenue: number;
+    price_per_night: number;
+};
 
-export default function Dashboard() {
+type DashboardProps = {
+    newTenants: { count: number; users: Tenant[] };
+    featuredProperties: FeaturedProperty[];
+};
+
+export default function Dashboard({ newTenants, featuredProperties }: DashboardProps) {
     const [BookingView, setBookingView] = useState<BookingView>('month');
     const today = new Date();
     const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -44,7 +59,7 @@ export default function Dashboard() {
                         amount: '$980',
                     },
                 },
-                
+
                 // {
                 //     start: new Date(2026, 7, 10),
                 //     end: new Date(2026, 7, 25),
@@ -435,7 +450,7 @@ export default function Dashboard() {
                                     </div>
 
                                     <h2 className="lh-1 fs-26 fw-medium">
-                                        2,537
+                                        {newTenants.count.toLocaleString()}
                                     </h2>
 
                                     <div style={{ marginTop: "55px" }}>
@@ -444,64 +459,24 @@ export default function Dashboard() {
                                         </span>
 
                                         <ul className="p-0 mb-0 list-unstyled d-flex last-child-none global-right-list">
-                                            <li style={{ marginRight: "-20px" }}>
-                                                <img
-                                                    alt="user12"
-                                                    className="border border-3 border-white rounded-circle"
-                                                    src="/backend/assets/images/user12.jpg"
-                                                    style={{ width: "52px", height: "52px" }}
-                                                />
-                                            </li>
-
-                                            <li style={{ marginRight: "-20px" }}>
-                                                <img
-                                                    alt="user13"
-                                                    className="border border-3 border-white rounded-circle"
-                                                    src="/backend/assets/images/user13.jpg"
-                                                    style={{ width: "52px", height: "52px" }}
-                                                />
-                                            </li>
-
-                                            <li style={{ marginRight: "-20px" }}>
-                                                <img
-                                                    alt="user14"
-                                                    className="border border-3 border-white rounded-circle"
-                                                    src="/backend/assets/images/user14.jpg"
-                                                    style={{ width: "52px", height: "52px" }}
-                                                />
-                                            </li>
-
-                                            <li style={{ marginRight: "-20px" }}>
-                                                <img
-                                                    alt="user15"
-                                                    className="border border-3 border-white rounded-circle"
-                                                    src="/backend/assets/images/user15.jpg"
-                                                    style={{ width: "52px", height: "52px" }}
-                                                />
-                                            </li>
-
-                                            <li style={{ marginRight: "-20px" }}>
-                                                <img
-                                                    alt="user16"
-                                                    className="border border-3 border-white rounded-circle"
-                                                    src="/backend/assets/images/user16.jpg"
-                                                    style={{ width: "52px", height: "52px" }}
-                                                />
-                                            </li>
-
-                                            <li
-                                                className="border border-3 border-white rounded-circle bg-primary text-center"
-                                                style={{
-                                                    marginRight: "-20px",
-                                                    width: "52px",
-                                                    height: "52px",
-                                                    lineHeight: "49px",
-                                                }}
-                                            >
-                                                <span className="text-white fs-16 fw-medium">
-                                                    27
-                                                </span>
-                                            </li>
+                                            {newTenants.users.slice(0, 5).map((tenant) => (
+                                                <li key={tenant.id} style={{ marginRight: "-20px" }}>
+                                                    <img
+                                                        alt={tenant.name || 'Tenant'}
+                                                        className="border border-3 border-white rounded-circle"
+                                                        src={tenant.avatar || '/backend/assets/images/user12.jpg'}
+                                                        style={{ width: "52px", height: "52px" }}
+                                                    />
+                                                </li>
+                                            ))}
+                                            {newTenants.count > 5 && (
+                                                <li
+                                                    className="border border-3 border-white rounded-circle bg-primary text-center"
+                                                    style={{ marginRight: "-20px", width: "52px", height: "52px", lineHeight: "49px" }}
+                                                >
+                                                    <span className="text-white fs-16 fw-medium">+{newTenants.count - 5}</span>
+                                                </li>
+                                            )}
                                         </ul>
                                     </div>
                                 </div>
@@ -516,7 +491,7 @@ export default function Dashboard() {
                                 </h3>
                                 <div className="dropdown select-dropdown without-border">
                                     <button aria-expanded="false" className="dropdown-toggle bg-transparent text-secondary fs-15" data-bs-toggle="dropdown">
-                                        This Week
+                                        This Month
                                     </button>
                                     <ul className="dropdown-menu dropdown-menu-end bg-white border-0 box-shadow rounded-10" data-simplebar="">
                                         <li>
@@ -546,168 +521,34 @@ export default function Dashboard() {
                                 <div className="table-responsive">
                                     <table className="table align-middle">
                                         <tbody>
-                                            <tr>
+                                            {featuredProperties.length > 0 ? featuredProperties.map((property, index) => (
+                                            <tr key={property.id}>
                                                 <td className="text-body fw-medium">
-                                                    01.
+                                                    {String(index + 1).padStart(2, '0')}.
                                                 </td>
                                                 <td className="ps-0">
-                                                    <a className="d-flex align-items-center text-decoration-none" href="product-details.html">
+                                                    <div className="d-flex align-items-center">
                                                         <div className="flex-shrink-0">
-                                                            <img alt="product1" className="rounded-circle" src="/backend/assets/images/product1.png" style={{ width: "50px", height: "50px" }} />
+                                                            <img alt={property.name} className="rounded-circle" src={property.image || '/backend/assets/images/product1.png'} style={{ width: "50px", height: "50px", objectFit: "cover" }} />
                                                         </div>
                                                         <div className="flex-grow-1 ms-12">
-                                                            <h3 className="fw-normal hover-text">
-                                                                Smart Watch
-                                                            </h3>
-                                                            <span className="fs-14 text-body fw-normal">
-                                                                953 Items Sold
-                                                            </span>
+                                                            <h3 className="fw-normal hover-text">{property.name}</h3>
+                                                            <span className="fs-14 text-body fw-normal">{property.bookings_count} bookings this month</span>
                                                         </div>
-                                                    </a>
+                                                    </div>
                                                 </td>
-                                                <td className="text-body">
-                                                    Item: #ARP-1217
-                                                </td>
-                                                <td className="text-body">
-                                                    $90,954
-                                                </td>
+                                                <td className="text-body">{property.location || 'Location not set'}</td>
+                                                <td className="text-body">${property.revenue.toLocaleString()}</td>
                                             </tr>
-                                            <tr>
-                                                <td className="text-body fw-medium">
-                                                    02.
-                                                </td>
-                                                <td className="ps-0">
-                                                    <a className="d-flex align-items-center text-decoration-none" href="product-details.html">
-                                                        <div className="flex-shrink-0">
-                                                            <img alt="product2" className="rounded-circle" src="/backend/assets/images/product2.png" style={{ width: "50px", height: "50px" }} />
-                                                        </div>
-                                                        <div className="flex-grow-1 ms-12">
-                                                            <h3 className="fw-normal hover-text">
-                                                                Mobile Phone
-                                                            </h3>
-                                                            <span className="fs-14 text-body fw-normal">
-                                                                876 Items Sold
-                                                            </span>
-                                                        </div>
-                                                    </a>
-                                                </td>
-                                                <td className="text-body">
-                                                    Item: #ARP-9513
-                                                </td>
-                                                <td className="text-body">
-                                                    $85,648
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td className="text-body fw-medium">
-                                                    03.
-                                                </td>
-                                                <td className="ps-0">
-                                                    <a className="d-flex align-items-center text-decoration-none" href="product-details.html">
-                                                        <div className="flex-shrink-0">
-                                                            <img alt="product3" className="rounded-circle" src="/backend/assets/images/product3.png" style={{ width: "50px", height: "50px" }} />
-                                                        </div>
-                                                        <div className="flex-grow-1 ms-12">
-                                                            <h3 className="fw-normal hover-text">
-                                                                Laptop Device
-                                                            </h3>
-                                                            <span className="fs-14 text-body fw-normal">
-                                                                823 Items Sold
-                                                            </span>
-                                                        </div>
-                                                    </a>
-                                                </td>
-                                                <td className="text-body">
-                                                    Item: #ARP-7531
-                                                </td>
-                                                <td className="text-body">
-                                                    $79,852
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td className="text-body fw-medium">
-                                                    04.
-                                                </td>
-                                                <td className="ps-0">
-                                                    <a className="d-flex align-items-center text-decoration-none" href="product-details.html">
-                                                        <div className="flex-shrink-0">
-                                                            <img alt="product4" className="rounded-circle" src="/backend/assets/images/product4.png" style={{ width: "50px", height: "50px" }} />
-                                                        </div>
-                                                        <div className="flex-grow-1 ms-12">
-                                                            <h3 className="fw-normal hover-text">
-                                                                Black T-Shirt
-                                                            </h3>
-                                                            <span className="fs-14 text-body fw-normal">
-                                                                743 Items Sold
-                                                            </span>
-                                                        </div>
-                                                    </a>
-                                                </td>
-                                                <td className="text-body">
-                                                    Item: #ARP-3579
-                                                </td>
-                                                <td className="text-body">
-                                                    $73,624
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td className="text-body fw-medium">
-                                                    05.
-                                                </td>
-                                                <td className="ps-0">
-                                                    <a className="d-flex align-items-center text-decoration-none" href="product-details.html">
-                                                        <div className="flex-shrink-0">
-                                                            <img alt="product5" className="rounded-circle" src="/backend/assets/images/product5.png" style={{ width: "50px", height: "50px" }} />
-                                                        </div>
-                                                        <div className="flex-grow-1 ms-12">
-                                                            <h3 className="fw-normal hover-text">
-                                                                Headphones
-                                                            </h3>
-                                                            <span className="fs-14 text-body fw-normal">
-                                                                693 Items Sold
-                                                            </span>
-                                                        </div>
-                                                    </a>
-                                                </td>
-                                                <td className="text-body">
-                                                    Item: #ARP-4826
-                                                </td>
-                                                <td className="text-body">
-                                                    $65,973
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td className="text-body fw-medium">
-                                                    06.
-                                                </td>
-                                                <td className="ps-0">
-                                                    <a className="d-flex align-items-center text-decoration-none" href="product-details.html">
-                                                        <div className="flex-shrink-0">
-                                                            <img alt="product6" className="rounded-circle" src="/backend/assets/images/product6.png" style={{ width: "50px", height: "50px" }} />
-                                                        </div>
-                                                        <div className="flex-grow-1 ms-12">
-                                                            <h3 className="fw-normal hover-text">
-                                                                Hand Watch
-                                                            </h3>
-                                                            <span className="fs-14 text-body fw-normal">
-                                                                654 Items Sold
-                                                            </span>
-                                                        </div>
-                                                    </a>
-                                                </td>
-                                                <td className="text-body">
-                                                    Item: #ARP-1265
-                                                </td>
-                                                <td className="text-body">
-                                                    $42,455
-                                                </td>
-                                            </tr>
+                                            )) : (
+                                                <tr><td colSpan={4} className="text-center text-body py-4">No featured properties booked this month.</td></tr>
+                                            )}
                                         </tbody>
                                     </table>
                                 </div>
                                 <div className="d-flex justify-content-center justify-content-sm-between align-items-center text-center flex-wrap gap-2 showing-wrap pt-15">
                                     <span className="fs-15">
-                                        Showing 1 to 5 of 50 entries
+                                        Showing 1 to {featuredProperties.length} of {featuredProperties.length} entries
                                     </span>
                                     <nav aria-label="Page navigation example" className="custom-pagination">
                                         <ul className="pagination mb-0 justify-content-center">

@@ -53,4 +53,9 @@ class Property extends Model
         return $this->hasMany(PropertyRoom::class);
     }
 
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
+    }
+
 }

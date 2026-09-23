@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Repositories\Auth\AuthRepository;
 use Ichtrojan\Otp\Otp;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
@@ -27,13 +28,15 @@ class AuthService
     {
         $data['password'] = Hash::make($data['password']);
 
-        $exists = $this->repository->findByEmail($data['email']);
+        $exists = $this->repository->TempUserByEmail($data['email']);
+
+        $userexists = $this->repository->findByEmail($data['email']);
+
+        if ($userexists) {
+            throw new \Exception('You are already registered, please login');
+        }
 
         if ($exists) {
-            if ($exists->email_verified_at != null) {
-                // return $this->errorResponse('Email already verified', 409);
-                throw new \Exception('Email already verified');
-            }
 
             $otp = (new Otp)->generate($data['email'], 'numeric', 6, 15);
 
@@ -41,59 +44,66 @@ class AuthService
 
             return [
                 'token' => $otp->token,
-                'user' => $exists,
+                'user'  => $exists->fresh(),
             ];
         }
 
-        $user = $this->repository->createUser($data);
+        $tempUser = $this->repository->createTempUser($data);
 
 
         $otp = (new Otp)->generate($data['email'], 'numeric', 6, 15);
+
+        Mail::to($data['email'])->send(new VerifyRegister($tempUser, $otp->token));
 
 
         // $token = $user->createToken('api-token')->plainTextToken;
 
         return [
             'token' => $otp->token,
-            'user' => $user,
+            'user' => $tempUser->fresh(),
         ];
     }
 
     public function verifyEmail(array $data): array
     {
-        $user = $this->repository->findByEmail($data['email']);
+        return DB::transaction(function () use ($data) {
+            $tempUser = $this->repository->TempUserByEmail($data['email']);
 
-        if (!$user) {
-            throw new \Exception('User not found');
-        }
+            if (!$tempUser) {
+                throw new \Exception('User not found');
+            }
 
-        if (!$user->email_verified_at) {
-            $user->update([
+            $user = User::create([
+                'first_name' => $tempUser->first_name,
+                'last_name' => $tempUser->last_name,
+                'email' => $tempUser->email,
+                'password' => $tempUser->password,
                 'email_verified_at' => now(),
             ]);
-        }
 
-        Mail::to($user->email)->send(new WelcomeMail($user->name));
+            $this->repository->DeleteTempUser($tempUser->email);
 
+            $token = $user->createToken('api-token')->plainTextToken;
 
-        $token = $user->createToken('api-token')->plainTextToken;
+            Mail::to($user->email)->send(new WelcomeMail($user->first_name));
 
-        return [
-            'token' => $token,
-            'user'  => $user->fresh(),
-        ];
+            return [
+                'token' => $token,
+                'user'  => $user,
+            ];
+        });
     }
 
     public function registerResendOtp(string $email): string
     {
-        $user = $this->repository->findByEmail($email);
+        $tempUser = $this->repository->TempUserByEmail($email);
 
-        if (!$user) {
+        if (!$tempUser) {
             throw new \Exception('User not found');
         }
 
         $otp = (new Otp)->generate($email, 'numeric', 6, 15);
-        Mail::to($email)->send(new VerifyRegister($user, $otp->token));
+        Mail::to($email)->send(new VerifyRegister($tempUser, $otp->token));
 
         return $otp->token;
     }

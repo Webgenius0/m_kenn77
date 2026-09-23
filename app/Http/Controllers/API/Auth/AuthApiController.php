@@ -71,7 +71,7 @@ class AuthApiController extends Controller
     public function registerResendOtp(Request $request)
     {
         $validated = Validator::make($request->all(), [
-            'email' => 'required|email|exists:users,email',
+            'email' => 'required|email|exists:temp_users,email',
         ])->validated();
 
         $result = $this->service->registerResendOtp(
