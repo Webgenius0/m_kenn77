@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'hospitable' => [
+        'api_key' => env('HOSPITABLE_API_KEY'),
+        'base_url' => env('HOSPITABLE_BASE_URL', 'https://public.api.hospitable.com/v2'),
+    ],
+
 ];

@@ -138,6 +138,10 @@ const items: MenuItem[] = [
                 title: 'Stripe Settings',
                 href: '/admin/settings/stripe',
             },
+            {
+                title: 'Hospitable Settings',
+                href: '/admin/settings/hospitable',
+            },
         ],
     },
 

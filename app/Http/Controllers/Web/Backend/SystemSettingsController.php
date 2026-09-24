@@ -120,4 +120,40 @@ class SystemSettingsController extends Controller
         // Credential::setValue('stripe', 'status', $request->status);
         return back()->with('success', 'Stripe settings updated successfully.');
     }
+
+    public function hospitable(Request $request, \App\Services\Backend\HospitableService $hospitableService)
+    {
+        $apiKey = Credential::getValue('hospitable', 'api_key', config('services.hospitable.api_key'));
+        $baseUrl = Credential::getValue('hospitable', 'base_url', config('services.hospitable.base_url', 'https://public.api.hospitable.com/v2'));
+
+        $connectionStatus = $hospitableService->getProperties(false);
+
+        return Inertia::render(
+            'backend/settings/hospitable',
+            [
+                'api_key' => $apiKey ?? '',
+                'base_url' => $baseUrl,
+                'is_connected' => $connectionStatus['connected'],
+                'message' => $connectionStatus['message'],
+                'properties_count' => count($connectionStatus['properties']),
+            ]
+        );
+    }
+
+    public function updateHospitable(Request $request, \App\Services\Backend\HospitableService $hospitableService)
+    {
+        $request->validate([
+            'api_key' => ['nullable', 'string', 'max:500'],
+            'base_url' => ['nullable', 'url', 'max:255'],
+        ]);
+
+        Credential::setValue('hospitable', 'api_key', $request->api_key ? trim($request->api_key) : null);
+        // Always save base_url so user can override or clear it back to env default
+        $newBaseUrl = $request->filled('base_url') ? trim($request->base_url) : null;
+        Credential::setValue('hospitable', 'base_url', $newBaseUrl);
+
+        $hospitableService->clearCache();
+
+        return back()->with('success', 'Hospitable settings updated successfully.');
+    }
 }

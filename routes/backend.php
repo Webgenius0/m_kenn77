@@ -81,6 +81,8 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::post('/settings/smtp/update', [SystemSettingsController::class, 'updateSmtp'])->name('admin.settings.smtp.update');
     Route::get('/settings/stripe', [SystemSettingsController::class, 'stripe'])->name('admin.settings.stripe');
     Route::post('/settings/stripe/update', [SystemSettingsController::class, 'updateStripe'])->name('admin.settings.stripe.update');
+    Route::get('/settings/hospitable', [SystemSettingsController::class, 'hospitable'])->name('admin.settings.hospitable');
+    Route::post('/settings/hospitable/update', [SystemSettingsController::class, 'updateHospitable'])->name('admin.settings.hospitable.update');
 
     // profile routes and controller
     Route::get('/profile', [ProfileController::class, 'index'])->name('admin.profile.index');
