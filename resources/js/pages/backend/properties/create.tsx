@@ -1,10 +1,29 @@
-import { Head, useForm } from "@inertiajs/react";
+import { Head, Link, useForm } from "@inertiajs/react";
 import { useState } from "react";
 
 interface DestinationType { id: number; name: string; }
 interface Amenity { id: number; name: string; }
 interface Rule { id: number; rule_type: string; icon?: string | null; }
 interface RoomForm { name: string; bed_type: string; quantity: string; image: File | null; }
+
+export interface HospitableProperty {
+  id: string;
+  name: string;
+  title: string;
+  description: string;
+  picture?: string | null;
+  address?: string | null;
+  city?: string | null;
+  state?: string | null;
+  country?: string | null;
+  latitude?: string | null;
+  longitude?: string | null;
+  property_type?: string | null;
+  max_guests?: number | null;
+  bedrooms?: number | null;
+  bathrooms?: number | null;
+  airbnb_property_url?: string | null;
+}
 
 interface PropertyForm {
   destination_type_id: string;
@@ -33,8 +52,30 @@ interface PropertyForm {
   primary_image_index: string;
 }
 
-export default function Create({ destinationTypes, amenities, rules }: { destinationTypes: DestinationType[]; amenities: Amenity[]; rules: Rule[] }) {
+interface CreateProps {
+  destinationTypes: DestinationType[];
+  amenities: Amenity[];
+  rules: Rule[];
+  hospitableProperties?: HospitableProperty[];
+  hospitableConnected?: boolean;
+  hospitableMessage?: string | null;
+}
+
+export default function Create({
+  destinationTypes,
+  amenities,
+  rules,
+  hospitableProperties = [],
+  hospitableConnected = false,
+  hospitableMessage = null,
+}: CreateProps) {
   const [imageInputKey, setImageInputKey] = useState(0);
+  const [hospitableList, setHospitableList] = useState<HospitableProperty[]>(hospitableProperties);
+  const [isConnected, setIsConnected] = useState<boolean>(hospitableConnected);
+  const [apiMessage, setApiMessage] = useState<string | null>(hospitableMessage);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [manualHospitableInput, setManualHospitableInput] = useState(hospitableProperties.length === 0);
+
   const { data, setData, post, processing, errors } = useForm<PropertyForm>({
     destination_type_id: "", hospitable_property_id: "", name: "", title: "", description: "",
     property_type: "entire_unit", location: "", address: "",
@@ -42,6 +83,59 @@ export default function Create({ destinationTypes, amenities, rules }: { destina
     is_active: true, is_featured: false, airbnb_property_url: "", amenity_ids: [], amenity_quantities: [], rule_ids: [], rule_values: [],
     rooms: [], images: [], primary_image_index: "0",
   });
+
+  const selectedHospitable = hospitableList.find((p) => String(p.id) === String(data.hospitable_property_id));
+
+  const handleSelectHospitable = (hospitableId: string) => {
+    setData("hospitable_property_id", hospitableId);
+
+    if (!hospitableId) return;
+
+    const prop = hospitableList.find(
+      (p) => String(p.id) === String(hospitableId)
+    );
+
+    if (prop) {
+      autoFillFromHospitable(prop);
+    }
+  };
+
+  const autoFillFromHospitable = (prop: HospitableProperty) => {
+    setData({
+      ...data,
+      hospitable_property_id: prop.id,
+      name: prop.name || "",
+      title: prop.title || "",
+      description: prop.description || "",
+      address: prop.address || "",
+      latitude: prop.latitude || "",
+      longitude: prop.longitude || "",
+      max_guests: prop.max_guests != null ? String(prop.max_guests) : "",
+      bedrooms: prop.bedrooms != null ? String(prop.bedrooms) : "",
+      bathrooms: prop.bathrooms != null ? String(prop.bathrooms) : "",
+      airbnb_property_url: prop.airbnb_property_url || "",
+    });
+  };
+
+  const refreshHospitableList = async () => {
+    setIsRefreshing(true);
+    try {
+      const res = await fetch("/admin/properties/hospitable-properties?refresh=1");
+      const json = await res.json();
+      if (json && Array.isArray(json.properties)) {
+        setHospitableList(json.properties);
+        setIsConnected(Boolean(json.connected));
+        setApiMessage(json.message || null);
+        if (json.properties.length > 0) {
+          setManualHospitableInput(false);
+        }
+      }
+    } catch (e) {
+      console.error("Failed to refresh Hospitable properties", e);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   const toggleAmenity = (id: number) => {
     const ids = data.amenity_ids.includes(id) ? data.amenity_ids.filter((item) => item !== id) : [...data.amenity_ids, id];
@@ -99,9 +193,119 @@ export default function Create({ destinationTypes, amenities, rules }: { destina
               <div className="mb-3"><h5 className="mb-1">Basic information</h5><p className="text-muted mb-0">Give guests a clear first impression.</p></div>
               <div className="mb-20"><label className="label fs-16 mb-2">Property Name</label><input className="form-control" placeholder="e.g. Seaside villa" value={data.name} onChange={(e) => setData("name", e.target.value)} />{errors.name && <div className="text-danger mt-1">{errors.name}</div>}</div>
               <div className="mb-20"><label className="label fs-16 mb-2">Title</label><input className="form-control" placeholder="e.g. Bright 3-bedroom stay near the beach" value={data.title} onChange={(e) => setData("title", e.target.value)} />{errors.title && <div className="text-danger mt-1">{errors.title}</div>}</div>
-              <div className="mb-20"><label className="label fs-16 mb-2">Description</label><textarea className="form-control" rows={4} placeholder="Describe the space, highlights, and what makes it special..." value={data.description} onChange={(e) => setData("description", e.target.value)} />{errors.description && <div className="text-danger mt-1">{errors.description}</div>}</div>
+              <div className="mb-20"><label className="label fs-16 mb-2">Description</label><textarea className="form-control" rows={8} placeholder="Describe the space, highlights, and what makes it special..." value={data.description} onChange={(e) => setData("description", e.target.value)} />{errors.description && <div className="text-danger mt-1">{errors.description}</div>}</div>
               <div className="mb-20"><label className="label fs-16 mb-2">Destination Type</label><select className="form-select" value={data.destination_type_id} onChange={(e) => setData("destination_type_id", e.target.value)}><option value="">Select destination type</option>{destinationTypes.map((type) => <option key={type.id} value={type.id}>{type.name}</option>)}</select>{errors.destination_type_id && <div className="text-danger mt-1">{errors.destination_type_id}</div>}</div>
-              <div className="mb-20"><label className="label fs-16 mb-2">Host Property ID</label><input className="form-control" placeholder="e.g. hospitable_12345" value={data.hospitable_property_id} onChange={(e) => setData("hospitable_property_id", e.target.value)} />{errors.hospitable_property_id && <div className="text-danger mt-1">{errors.hospitable_property_id}</div>}</div>
+              <div className="mb-20">
+                <div className="d-flex justify-content-between align-items-center mb-2">
+                  <label className="label fs-16 mb-0">Hospitable Property (Host ID)</label>
+                  <div className="d-flex align-items-center gap-2">
+                    {isConnected ? (
+                      <span className="badge bg-success bg-opacity-10 text-success fs-12 px-2 py-1 rounded-pill">
+                        API Connected ({hospitableList.length})
+                      </span>
+                    ) : (
+                      <Link
+                        href="/admin/settings/hospitable"
+                        className="badge bg-warning bg-opacity-10 text-warning fs-12 px-2 py-1 rounded-pill text-decoration-none"
+                        title="Configure API Key in Settings"
+                      >
+                        Setup API Key
+                      </Link>
+                    )}
+
+                    {hospitableList.length > 0 && (
+                      <button
+                        type="button"
+                        className="btn btn-link btn-sm p-0 fs-12 text-primary"
+                        onClick={() => setManualHospitableInput(!manualHospitableInput)}
+                      >
+                        {manualHospitableInput ? "Choose from list" : "Enter manually"}
+                      </button>
+                    )}
+
+                    <button
+                      type="button"
+                      className="btn btn-link btn-sm p-0 fs-12 text-muted"
+                      onClick={refreshHospitableList}
+                      disabled={isRefreshing}
+                      title="Refresh properties from Hospitable"
+                    >
+                      <i className={`material-symbols-outlined fs-16 ${isRefreshing ? "spin" : ""}`}>
+                        sync
+                      </i>
+                    </button>
+                  </div>
+                </div>
+
+                {!manualHospitableInput && hospitableList.length > 0 ? (
+                  <>
+                    <select
+                      className="form-select"
+                      value={data.hospitable_property_id}
+                      onChange={(e) => handleSelectHospitable(e.target.value)}
+                    >
+                      <option value="">-- Choose from Hospitable ({hospitableList.length} properties available) --</option>
+                      {hospitableList.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.name} (ID: {p.id})
+                        </option>
+                      ))}
+                    </select>
+
+                    {selectedHospitable && (
+                      <div className="p-3 bg-light rounded-10 mt-2 border">
+                        <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                          <div>
+                            <div className="fw-semibold fs-14 text-dark">{selectedHospitable.name}</div>
+                            <div className="fs-12 text-muted">
+                              Hospitable ID: <code>{selectedHospitable.id}</code>
+                              {selectedHospitable.address && ` · ${selectedHospitable.address}`}
+                            </div>
+                          </div>
+                          <div className="d-flex align-items-center gap-2">
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-outline-primary"
+                              onClick={() => autoFillFromHospitable(selectedHospitable)}
+                            >
+                              Auto-fill details
+                            </button>
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-outline-danger"
+                              onClick={() => setData("hospitable_property_id", "")}
+                            >
+                              Deselect
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <input
+                      className="form-control"
+                      placeholder="e.g. hospitable_12345 or UUID"
+                      value={data.hospitable_property_id}
+                      onChange={(e) => setData("hospitable_property_id", e.target.value)}
+                    />
+                    {hospitableList.length === 0 && (
+                      <div className="fs-12 text-muted mt-1">
+                        No Hospitable properties loaded.{" "}
+                        <Link href="/admin/settings/hospitable" className="text-primary text-decoration-underline">
+                          Configure your Hospitable API Key
+                        </Link>{" "}
+                        or enter the ID manually above.
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {errors.hospitable_property_id && (
+                  <div className="text-danger mt-1">{errors.hospitable_property_id}</div>
+                )}
+              </div>
             </div>
 
             <div className="col-lg-6">

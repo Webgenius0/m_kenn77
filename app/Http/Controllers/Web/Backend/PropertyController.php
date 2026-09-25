@@ -7,6 +7,7 @@ use App\Models\Amenity;
 use App\Models\DestinationType;
 use App\Models\Property;
 use App\Models\Rule;
+use App\Services\Backend\HospitableService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -15,6 +16,13 @@ use Inertia\Inertia;
 
 class PropertyController extends Controller
 {
+    protected HospitableService $hospitableService;
+
+    public function __construct(HospitableService $hospitableService)
+    {
+        $this->hospitableService = $hospitableService;
+    }
+
     public function index()
     {
         return Inertia::render('backend/properties/index', [
@@ -24,10 +32,15 @@ class PropertyController extends Controller
 
     public function create()
     {
+        $hospitable = $this->hospitableService->getProperties();
+
         return Inertia::render('backend/properties/create', [
             'destinationTypes' => DestinationType::orderBy('name')->get(),
             'amenities' => Amenity::where('is_active', true)->orderBy('name')->get(),
             'rules' => Rule::orderBy('rule_type')->get(),
+            'hospitableProperties' => $hospitable['properties'],
+            'hospitableConnected' => $hospitable['connected'],
+            'hospitableMessage' => $hospitable['message'],
         ]);
     }
 
@@ -61,12 +74,23 @@ class PropertyController extends Controller
 
     public function edit(Property $property)
     {
+        $hospitable = $this->hospitableService->getProperties();
+
         return Inertia::render('backend/properties/edit', [
             'property' => $property->load(['destinationType', 'amenities', 'rules', 'rooms', 'images']),
             'destinationTypes' => DestinationType::orderBy('name')->get(),
             'amenities' => Amenity::where('is_active', true)->orderBy('name')->get(),
             'rules' => Rule::orderBy('rule_type')->get(),
+            'hospitableProperties' => $hospitable['properties'],
+            'hospitableConnected' => $hospitable['connected'],
+            'hospitableMessage' => $hospitable['message'],
         ]);
+    }
+
+    public function hospitableProperties(Request $request)
+    {
+        $refresh = $request->boolean('refresh', false);
+        return response()->json($this->hospitableService->getProperties($refresh));
     }
 
     public function update(Request $request, Property $property)

@@ -186,12 +186,16 @@ class HospitableService
 
         return [
             'id' => (string) ($item['id'] ?? ''),
-            'name' => (string) ($item['name'] ?? $item['nickname'] ?? $item['title'] ?? 'Unnamed Property'),
+            'name' => (string) ($item['name'] ?? 'Unnamed Property'),
+            'title' => (string) ($item['public_name'] ?? ''),
+            'description' => (string) ($item['description'] ?? $item['summary'] ?? ''),
             'picture' => $picture,
             'address' => $address,
             'city' => $city,
             'state' => $state,
             'country' => $country,
+            'latitude' => $item['address']['coordinates']['latitude'] ?? null,
+            'longitude' => $item['address']['coordinates']['longitude'] ?? null,
             'property_type' => $item['property_type'] ?? null,
             'max_guests' => $item['capacity']['max'] ?? $item['max_guests'] ?? null,
             'bedrooms' => $item['capacity']['bedrooms'] ?? $item['bedrooms'] ?? null,

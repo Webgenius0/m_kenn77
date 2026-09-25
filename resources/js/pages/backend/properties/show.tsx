@@ -11,6 +11,7 @@ interface Property {
   destination_type?: DestinationType | null;
   hospitable_property_id?: string | null;
   name: string;
+  slug?: string | null;
   title?: string | null;
   description?: string | null;
   property_type?: string | null;
@@ -125,7 +126,14 @@ export default function Show({ property }: { property: Property }) {
                 <div className="row g-4">
                   <div className="col-md-6">
                     <label className="label fs-14 text-muted mb-2">Hospitable Property ID</label>
-                    <div className="form-control bg-light">{property.hospitable_property_id || "—"}</div>
+                    <div className="form-control bg-light d-flex align-items-center justify-content-between">
+                      <span>{property.hospitable_property_id || "—"}</span>
+                      {property.hospitable_property_id && (
+                        <span className="badge bg-primary bg-opacity-10 text-primary fs-12 px-2 py-1 rounded-pill">
+                          Hospitable Connected
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <div className="col-md-6">
                     <label className="label fs-14 text-muted mb-2">Title</label>
@@ -137,11 +145,22 @@ export default function Show({ property }: { property: Property }) {
                   </div>
                   <div className="col-md-12">
                     <label className="label fs-14 text-muted mb-2">Address</label>
-                    <div className="form-control bg-light">{property.address || "—"}</div>
+                    <div className="form-control bg-light" style={{ height: "auto", minHeight: "56px" }}>
+                      {property.address || "—"}
+                    </div>
                   </div>
                   <div className="col-md-12">
                     <label className="label fs-14 text-muted mb-2">Description</label>
-                    <div className="form-control bg-light" style={{ minHeight: "120px" }}>
+                    <div
+                      className="form-control bg-light"
+                      style={{
+                        minHeight: "120px",
+                        height: "auto",
+                        whiteSpace: "pre-line",
+                        lineHeight: "1.6",
+                        wordBreak: "break-word",
+                      }}
+                    >
                       {property.description || "No description added yet."}
                     </div>
                   </div>

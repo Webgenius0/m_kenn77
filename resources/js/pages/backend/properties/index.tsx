@@ -14,6 +14,7 @@ interface DestinationType {
 
 interface Property {
     id: number;
+    hospitable_property_id?: string | null;
     name: string;
     slug: string;
     title: string | null;
@@ -71,7 +72,14 @@ export default function Index({ properties }: { properties: Property[] }) {
                                         <tr key={property.id}>
                                             <td className="text-body">
                                                 <div>
-                                                    <div className="fw-medium">{property.name}</div>
+                                                    <div className="fw-medium d-flex align-items-center gap-2">
+                                                        {property.name}
+                                                        {property.hospitable_property_id && (
+                                                            <span className="badge bg-primary bg-opacity-10 text-primary fs-11 px-2 py-0 rounded" title={`Hospitable ID: ${property.hospitable_property_id}`}>
+                                                                Hospitable
+                                                            </span>
+                                                        )}
+                                                    </div>
                                                     <small className="text-muted">{property.slug}</small>
                                                 </div>
                                             </td>
