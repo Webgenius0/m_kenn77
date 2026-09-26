@@ -203,4 +203,316 @@ class HospitableService
             'airbnb_property_url' => $airbnbUrl ?? ($item['airbnb_url'] ?? null),
         ];
     }
+
+    /**
+     * Clear cached calendar for a specific property.
+     */
+    public function clearCalendarCache(string $propertyId): void
+    {
+        Cache::forget("hospitable_calendar_{$propertyId}");
+    }
+
+    /**
+     * Retrieve calendar availability and pricing from Hospitable API.
+     *
+     * URL: https://public.api.hospitable.com/v2/properties/{uuid}/calendar
+     *
+     * @param string $propertyId Hospitable property UUID/ID
+     * @param string|null $startDate YYYY-MM-DD
+     * @param string|null $endDate YYYY-MM-DD
+     * @param bool $refresh Force bypass cache
+     * @return array{connected: bool, days: array, booked_dates: array, message: ?string}
+     */
+    public function getCalendar(string $propertyId, ?string $startDate = null, ?string $endDate = null, bool $refresh = false): array
+    {
+        if (!$this->isConfigured()) {
+            return [
+                'connected' => false,
+                'days' => [],
+                'booked_dates' => [],
+                'message' => 'Hospitable API key is not configured.',
+            ];
+        }
+
+        $startDate = $startDate ?: now()->format('Y-m-d');
+        $endDate = $endDate ?: now()->addMonths(6)->format('Y-m-d');
+
+        $cacheKey = "hospitable_calendar_{$propertyId}_{$startDate}_{$endDate}";
+
+        if ($refresh) {
+            Cache::forget($cacheKey);
+        }
+
+        return Cache::remember($cacheKey, self::CACHE_TTL_SECONDS, function () use ($propertyId, $startDate, $endDate) {
+            return $this->fetchCalendarFromApi($propertyId, $startDate, $endDate);
+        });
+    }
+
+    /**
+     * Fetch calendar data from Hospitable API via HTTP request.
+     */
+    protected function fetchCalendarFromApi(string $propertyId, string $startDate, string $endDate): array
+    {
+        $apiKey = $this->getApiKey();
+        $baseUrl = $this->getBaseUrl();
+        $requestUrl = "{$baseUrl}/properties/{$propertyId}/calendar";
+
+        Log::info('Hospitable Calendar API request', [
+            'url' => $requestUrl,
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+        ]);
+
+        try {
+            $response = Http::withToken($apiKey)
+                ->withHeaders([
+                    'Accept' => 'application/json',
+                ])
+                ->timeout(15)
+                ->get($requestUrl, [
+                    'start_date' => $startDate,
+                    'end_date' => $endDate,
+                ]);
+
+            if (!$response->successful()) {
+                $status = $response->status();
+                $body = $response->json();
+                $errorMsg = $body['message'] ?? $body['error'] ?? "Hospitable Calendar API responded with status {$status}.";
+
+                Log::warning('Hospitable Calendar API request failed', [
+                    'url' => $requestUrl,
+                    'status' => $status,
+                    'response' => substr($response->body(), 0, 500),
+                ]);
+
+                return [
+                    'connected' => false,
+                    'days' => [],
+                    'booked_dates' => [],
+                    'message' => "Hospitable API Error ({$status}): {$errorMsg}",
+                ];
+            }
+
+            $json = $response->json();
+            $rawDays = $json['data']['days'] ?? $json['data'] ?? (isset($json[0]) ? $json : []);
+
+            $days = [];
+            $bookedDates = [];
+
+            foreach ($rawDays as $item) {
+                $date = $item['date'] ?? null;
+                if (!$date) {
+                    continue;
+                }
+
+                $isAvailable = true;
+                if (isset($item['status']['available'])) {
+                    $isAvailable = (bool) $item['status']['available'];
+                } elseif (isset($item['available'])) {
+                    $isAvailable = (bool) $item['available'];
+                } elseif (isset($item['status']) && is_string($item['status'])) {
+                    $isAvailable = strtolower($item['status']) === 'available';
+                }
+
+                $reason = $item['status']['reason'] ?? $item['reason'] ?? null;
+
+                $price = null;
+                if (isset($item['price']['amount'])) {
+                    $rawAmount = (float) $item['price']['amount'];
+                    $price = $rawAmount > 1000 ? $rawAmount / 100 : $rawAmount;
+                } elseif (isset($item['price']) && is_numeric($item['price'])) {
+                    $price = (float) $item['price'];
+                }
+
+                $minStay = $item['min_stay'] ?? $item['minimum_stay'] ?? 1;
+
+                $days[] = [
+                    'date' => $date,
+                    'available' => $isAvailable,
+                    'price' => $price,
+                    'min_stay' => (int) $minStay,
+                    'reason' => $reason,
+                ];
+
+                if (!$isAvailable) {
+                    $bookedDates[] = $date;
+                }
+            }
+
+            return [
+                'connected' => true,
+                'days' => $days,
+                'booked_dates' => array_values(array_unique($bookedDates)),
+                'message' => null,
+            ];
+
+        } catch (\Throwable $e) {
+            Log::error('Hospitable Calendar API exception', [
+                'property_id' => $propertyId,
+                'error' => $e->getMessage(),
+            ]);
+
+            return [
+                'connected' => false,
+                'days' => [],
+                'booked_dates' => [],
+                'message' => 'Unable to connect to Hospitable Calendar API: ' . $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Update calendar days on Hospitable API.
+     *
+     * URL: PUT https://public.api.hospitable.com/v2/properties/{uuid}/calendar
+     *
+     * @param string $propertyId Hospitable property UUID/ID
+     * @param array $days Array of day payloads
+     * @return array{success: bool, message: string, response: ?array}
+     */
+    public function updateCalendar(string $propertyId, array $days): array
+    {
+        if (!$this->isConfigured()) {
+            return [
+                'success' => false,
+                'message' => 'Hospitable API key is not configured.',
+                'response' => null,
+            ];
+        }
+
+        $apiKey = $this->getApiKey();
+        $baseUrl = $this->getBaseUrl();
+        $requestUrl = "{$baseUrl}/properties/{$propertyId}/calendar";
+
+        Log::info('Hospitable Calendar Update request', [
+            'url' => $requestUrl,
+            'days_count' => count($days),
+        ]);
+
+        try {
+            $response = Http::withToken($apiKey)
+                ->withHeaders([
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json',
+                ])
+                ->timeout(20)
+                ->put($requestUrl, [
+                    'days' => $days,
+                ]);
+
+            if (!$response->successful() && $response->status() === 405) {
+                $response = Http::withToken($apiKey)
+                    ->withHeaders([
+                        'Accept' => 'application/json',
+                        'Content-Type' => 'application/json',
+                    ])
+                    ->timeout(20)
+                    ->patch($requestUrl, [
+                        'days' => $days,
+                    ]);
+            }
+
+            if (!$response->successful()) {
+                $status = $response->status();
+                $body = $response->json();
+                $errorMsg = $body['message'] ?? $body['error'] ?? "Hospitable Calendar Update responded with status {$status}.";
+
+                Log::warning('Hospitable Calendar Update failed', [
+                    'url' => $requestUrl,
+                    'status' => $status,
+                    'body' => $body,
+                ]);
+
+                return [
+                    'success' => false,
+                    'message' => "Hospitable API Error ({$status}): {$errorMsg}",
+                    'response' => $body,
+                ];
+            }
+
+            $this->clearCalendarCache($propertyId);
+
+            return [
+                'success' => true,
+                'message' => 'Calendar successfully updated in Hospitable.',
+                'response' => $response->json(),
+            ];
+
+        } catch (\Throwable $e) {
+            Log::error('Hospitable Calendar Update exception', [
+                'property_id' => $propertyId,
+                'error' => $e->getMessage(),
+            ]);
+
+            return [
+                'success' => false,
+                'message' => 'Unable to update Hospitable Calendar: ' . $e->getMessage(),
+                'response' => null,
+            ];
+        }
+    }
+
+    /**
+     * Block dates for a reservation on Hospitable API.
+     *
+     * @param string $propertyId Hospitable property UUID
+     * @param string $checkIn Check-in date (YYYY-MM-DD)
+     * @param string $checkOut Check-out date (YYYY-MM-DD)
+     * @param string|null $note Reason or booking reference
+     * @return array{success: bool, message: string, response: ?array}
+     */
+    public function blockDates(string $propertyId, string $checkIn, string $checkOut, ?string $note = null): array
+    {
+        $start = \Illuminate\Support\Carbon::parse($checkIn);
+        $end = \Illuminate\Support\Carbon::parse($checkOut);
+
+        if ($end->lessThanOrEqualTo($start)) {
+            return [
+                'success' => false,
+                'message' => 'Check-out date must be after check-in date.',
+                'response' => null,
+            ];
+        }
+
+        $days = [];
+        $current = $start->copy();
+        while ($current->lessThan($end)) {
+            $days[] = [
+                'date' => $current->format('Y-m-d'),
+                'available' => false,
+                'status' => [
+                    'available' => false,
+                    'reason' => 'reserved',
+                ],
+            ];
+            $current->addDay();
+        }
+
+        return $this->updateCalendar($propertyId, $days);
+    }
+
+    /**
+     * Unblock dates on Hospitable API (e.g. if reservation was cancelled).
+     */
+    public function unblockDates(string $propertyId, string $checkIn, string $checkOut): array
+    {
+        $start = \Illuminate\Support\Carbon::parse($checkIn);
+        $end = \Illuminate\Support\Carbon::parse($checkOut);
+
+        $days = [];
+        $current = $start->copy();
+        while ($current->lessThan($end)) {
+            $days[] = [
+                'date' => $current->format('Y-m-d'),
+                'available' => true,
+                'status' => [
+                    'available' => true,
+                    'reason' => null,
+                ],
+            ];
+            $current->addDay();
+        }
+
+        return $this->updateCalendar($propertyId, $days);
+    }
 }

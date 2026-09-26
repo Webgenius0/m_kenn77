@@ -4,9 +4,12 @@ namespace App\Http\Controllers\API\Property;
 
 use App\Concerns\ApiResponse;
 use App\Http\Controllers\Controller;
+use App\Models\Booking;
 use App\Models\Property;
+use App\Services\Backend\HospitableService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class PropertyApiController extends Controller
 {
@@ -21,6 +24,12 @@ class PropertyApiController extends Controller
                 ->when($request->filled('location'), function ($query) use ($request) {
                     $location = $request->input('location');
                     $query->where('location', $location);
+                })
+                ->when($request->filled('destination_type'), function ($query) use ($request) {
+                    $type = $request->input('destination_type');
+                    $query->whereHas('destinationType', function ($q) use ($type) {
+                        $q->where('slug', $type)->orWhere('id', $type);
+                    });
                 })
                 ->latest()
                 ->paginate($request->input('per_page', 12));
@@ -110,13 +119,133 @@ class PropertyApiController extends Controller
             $property = Property::where('slug', $slug)->firstOrFail();
             $property->load(['destinationType', 'amenities', 'rules', 'rooms', 'images']);
 
-            return $this->successResponse('Property details', $this->transformProperty($property));
+            $availability = $this->getPropertyAvailability($property);
+
+            return $this->successResponse('Property details', $this->transformProperty($property, $availability));
         } catch (\Throwable $e) {
             return $this->errorResponse('Failed to fetch property details', 500, ['error' => $e->getMessage()]);
         }
     }
 
-    protected function transformProperty(Property $property): array
+    /**
+     * Retrieve calendar availability and booked dates for a property.
+     */
+    public function calendar(Request $request, $slug): JsonResponse
+    {
+        try {
+            $property = Property::where('slug', $slug)->orWhere('id', $slug)->firstOrFail();
+            $startDate = $request->query('start_date', now()->format('Y-m-d'));
+            $endDate = $request->query('end_date', now()->addMonths(6)->format('Y-m-d'));
+
+            $availability = $this->getPropertyAvailability($property, $startDate, $endDate);
+            
+
+            return $this->successResponse('Property calendar', $availability);
+        } catch (\Throwable $e) {
+            return $this->errorResponse('Failed to fetch property calendar', 500, ['error' => $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Merge Hospitable calendar and local database bookings to identify booked dates.
+     */
+    public function getPropertyAvailability(Property $property, ?string $startDate = null, ?string $endDate = null): array
+    {
+        $startDate = $startDate ?: now()->format('Y-m-d');
+        $endDate = $endDate ?: now()->addMonths(6)->format('Y-m-d');
+
+        $bookedDates = [];
+        $calendarDays = [];
+        $hospitableConnected = false;
+
+        // 1. Fetch from Hospitable API if hospitable_property_id is set
+        if (filled($property->hospitable_property_id)) {
+            $hospitableService = app(HospitableService::class);
+            $hospitableResult = $hospitableService->getCalendar(
+                $property->hospitable_property_id,
+                $startDate,
+                $endDate
+            );
+
+            if ($hospitableResult['connected']) {
+                $hospitableConnected = true;
+                $bookedDates = $hospitableResult['booked_dates'] ?? [];
+                $calendarDays = $hospitableResult['days'] ?? [];
+            }
+        }
+
+        // 2. Query local database bookings for this property
+        $localBookings = Booking::where('property_id', $property->id)
+            ->whereIn('status', ['confirmed', 'paid', 'pending'])
+            ->where('check_out', '>=', $startDate)
+            ->where('check_in', '<=', $endDate)
+            ->get(['check_in', 'check_out']);
+
+        foreach ($localBookings as $booking) {
+            $checkIn = Carbon::parse($booking->check_in);
+            $checkOut = Carbon::parse($booking->check_out);
+
+            // Night stays are from check_in to check_out - 1 day
+            $curr = $checkIn->copy();
+            while ($curr->lessThan($checkOut)) {
+                $dateStr = $curr->format('Y-m-d');
+                if ($dateStr >= $startDate && $dateStr <= $endDate) {
+                    $bookedDates[] = $dateStr;
+                }
+                $curr->addDay();
+            }
+        }
+
+        $bookedDates = array_values(array_unique($bookedDates));
+        sort($bookedDates);
+        $bookedMap = array_flip($bookedDates);
+
+        // 3. Normalize calendar days list
+        $daysByDate = [];
+        foreach ($calendarDays as $day) {
+            $daysByDate[$day['date']] = $day;
+        }
+
+        $finalDays = [];
+        $periodStart = Carbon::parse($startDate);
+        $periodEnd = Carbon::parse($endDate);
+        $dayCursor = $periodStart->copy();
+
+        while ($dayCursor->lessThanOrEqualTo($periodEnd)) {
+            $dStr = $dayCursor->format('Y-m-d');
+            $isBooked = isset($bookedMap[$dStr]);
+
+            if (isset($daysByDate[$dStr])) {
+                $dayItem = $daysByDate[$dStr];
+                if ($isBooked) {
+                    $dayItem['available'] = false;
+                    $dayItem['reason'] = $dayItem['reason'] ?: 'booked';
+                }
+                $finalDays[] = $dayItem;
+            } else {
+                $finalDays[] = [
+                    'date' => $dStr,
+                    'available' => !$isBooked,
+                    'price' => (float) ($property->price_per_night ?? 0),
+                    'min_stay' => 1,
+                    'reason' => $isBooked ? 'booked' : null,
+                ];
+            }
+
+            $dayCursor->addDay();
+        }
+
+        return [
+            'hospitable_connected'   => $hospitableConnected,
+            'hospitable_property_id' => $property->hospitable_property_id,
+            'start_date'             => $startDate,
+            'end_date'               => $endDate,
+            'booked_dates'           => $bookedDates,
+            'days'                   => $finalDays,
+        ];
+    }
+
+    protected function transformProperty(Property $property, ?array $availability = null): array
     {
         return [
             'id' => $property->id,
@@ -124,6 +253,7 @@ class PropertyApiController extends Controller
                 'id'            => $property->destinationType->id,
                 'name'          => $property->destinationType->name,
             ] : null,
+            'hospitable_property_id' => $property->hospitable_property_id,
             'name'              => $property->name,
             'slug'              => $property->slug,
             'title'             => $property->title,
@@ -142,6 +272,7 @@ class PropertyApiController extends Controller
             'is_active'         => (bool) $property->is_active,
             'is_featured'       => (bool) $property->is_featured,
             'airbnb_property_url' => $property->airbnb_property_url,
+            'availability'      => $availability,
             'amenities'         => $property->amenities->map(function ($amenity) {
                 return [
                     'id'        => $amenity->id,

@@ -7,4 +7,5 @@ Route::controller(PropertyApiController::class)->prefix('properties')->group(fun
     Route::get('/', 'index');
     Route::get('/featured', 'featuredProperties');
     Route::get('/{slug}', 'show');
+    Route::get('/{slug}/calendar', 'calendar');
 });

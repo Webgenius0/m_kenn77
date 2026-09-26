@@ -113,7 +113,7 @@ class PropertiesTest extends TestCase
         $user = User::factory()->create(['role' => 'admin']);
 
         \Illuminate\Support\Facades\Http::fake([
-            'https://api.hospitable.com/v2/properties*' => \Illuminate\Support\Facades\Http::response([
+            '*hospitable.com/v2/properties*' => \Illuminate\Support\Facades\Http::response([
                 'data' => [
                     [
                         'id' => 'hosp_test_123',

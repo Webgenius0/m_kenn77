@@ -13,7 +13,14 @@ class Payment extends Model
         'currency',
         'payment_method',
         'status',
-        'paid_at'
+        'paid_at',
+        'payload',
+    ];
+
+    protected $casts = [
+        'amount' => 'decimal:2',
+        'paid_at' => 'datetime',
+        'payload' => 'array',
     ];
 
     public function booking()
