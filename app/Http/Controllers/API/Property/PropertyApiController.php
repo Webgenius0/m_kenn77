@@ -130,21 +130,21 @@ class PropertyApiController extends Controller
     /**
      * Retrieve calendar availability and booked dates for a property.
      */
-    public function calendar(Request $request, $slug): JsonResponse
-    {
-        try {
-            $property = Property::where('slug', $slug)->orWhere('id', $slug)->firstOrFail();
-            $startDate = $request->query('start_date', now()->format('Y-m-d'));
-            $endDate = $request->query('end_date', now()->addMonths(6)->format('Y-m-d'));
+    // public function calendar(Request $request, $slug): JsonResponse
+    // {
+    //     try {
+    //         $property = Property::where('slug', $slug)->orWhere('id', $slug)->firstOrFail();
+    //         $startDate = $request->query('start_date', now()->format('Y-m-d'));
+    //         $endDate = $request->query('end_date', now()->addMonths(6)->format('Y-m-d'));
 
-            $availability = $this->getPropertyAvailability($property, $startDate, $endDate);
+    //         $availability = $this->getPropertyAvailability($property, $startDate, $endDate);
             
 
-            return $this->successResponse('Property calendar', $availability);
-        } catch (\Throwable $e) {
-            return $this->errorResponse('Failed to fetch property calendar', 500, ['error' => $e->getMessage()]);
-        }
-    }
+    //         return $this->successResponse('Property calendar', $availability);
+    //     } catch (\Throwable $e) {
+    //         return $this->errorResponse('Failed to fetch property calendar', 500, ['error' => $e->getMessage()]);
+    //     }
+    // }
 
     /**
      * Merge Hospitable calendar and local database bookings to identify booked dates.
@@ -240,7 +240,7 @@ class PropertyApiController extends Controller
             'hospitable_property_id' => $property->hospitable_property_id,
             'start_date'             => $startDate,
             'end_date'               => $endDate,
-            'booked_dates'           => $bookedDates,
+            // 'booked_dates'           => $bookedDates,
             'days'                   => $finalDays,
         ];
     }
@@ -272,7 +272,6 @@ class PropertyApiController extends Controller
             'is_active'         => (bool) $property->is_active,
             'is_featured'       => (bool) $property->is_featured,
             'airbnb_property_url' => $property->airbnb_property_url,
-            'availability'      => $availability,
             'amenities'         => $property->amenities->map(function ($amenity) {
                 return [
                     'id'        => $amenity->id,
@@ -322,6 +321,7 @@ class PropertyApiController extends Controller
                 ]
 
             ],
+            'availability'      => $availability,
         ];
     }
 }

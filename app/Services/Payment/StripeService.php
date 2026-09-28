@@ -72,10 +72,9 @@ class StripeService
      * Create a Stripe Checkout Session for a booking.
      *
      * @param Booking $booking
-     * @param array $options Optional overrides (success_url, cancel_url)
      * @return array{success: bool, session_id: ?string, checkout_url: ?string, message: ?string, raw: ?array}
      */
-    public function createCheckoutSession(Booking $booking, array $options = []): array
+    public function createCheckoutSession(Booking $booking): array
     {
         if (!$this->isConfigured()) {
             return [
@@ -96,9 +95,9 @@ class StripeService
         $currency = strtolower($booking->currency ?: 'usd');
 
         // URL configuration
-        $baseUrl = config('app.url', 'http://localhost:8000');
-        $successUrl = $options['success_url'] ?? "{$baseUrl}/booking/confirmation?session_id={CHECKOUT_SESSION_ID}&booking_number={$booking->booking_number}";
-        $cancelUrl = $options['cancel_url'] ?? "{$baseUrl}/booking/cancelled?booking_number={$booking->booking_number}";
+        $baseUrl = config('app.url', 'http://localhost:5000');
+        $successUrl = "{$baseUrl}/booking/confirmation?session_id={CHECKOUT_SESSION_ID}&booking_number={$booking->booking_number}";
+        $cancelUrl = "{$baseUrl}/booking/cancelled?booking_number={$booking->booking_number}";
 
         // Ensure {CHECKOUT_SESSION_ID} placeholder is present for Stripe to fill if needed
         if (!str_contains($successUrl, '{CHECKOUT_SESSION_ID}')) {
