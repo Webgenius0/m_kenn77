@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Log;
 class HospitableService
 {
     protected const CACHE_KEY = 'hospitable_properties_cache';
-    protected const CACHE_TTL_SECONDS = 30;
+    protected const CACHE_TTL_SECONDS = 300;
     /**
      * Get the active Hospitable API key.
      */
