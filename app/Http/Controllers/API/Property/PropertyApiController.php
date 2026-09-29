@@ -35,6 +35,8 @@ class PropertyApiController extends Controller
                 ->paginate($request->input('per_page', 12));
 
             $properties->getCollection()->transform(function (Property $property) {
+                [$avgRating, $reviewCount] = $this->getReviewSummary($property);
+
                 return [
                     'id'                => $property->id,
                     'name'              => $property->name,
@@ -44,8 +46,8 @@ class PropertyApiController extends Controller
                     'max_guests'        => $property->max_guests,
                     'bedrooms'          => $property->bedrooms,
                     'bathrooms'         => $property->bathrooms,
-                    'avg_rating'        => 4.5,
-                    'review_count'      => 14,
+                    'avg_rating'        => $avgRating,
+                    'review_count'      => $reviewCount,
                     'images'            => $property->images->map(function ($image) {
                         return [
                             'image_path' => $image->image_path,
@@ -77,6 +79,8 @@ class PropertyApiController extends Controller
                 ->latest()
                 ->get()
                 ->map(function (Property $property) {
+                    [$avgRating, $reviewCount] = $this->getReviewSummary($property);
+
                     return [
                         'id'              => $property->id,
                         'name'            => $property->name,
@@ -86,8 +90,8 @@ class PropertyApiController extends Controller
                         'max_guests'      => $property->max_guests,
                         'bedrooms'        => $property->bedrooms,
                         'bathrooms'       => $property->bathrooms,
-                        'avg_rating'      => 4.5,
-                        'review_count'    => 14,
+                        'avg_rating'      => $avgRating,
+                        'review_count'    => $reviewCount,
                         'images'          => $property->images
                             ->map(function ($image) {
                                 return [
@@ -247,6 +251,8 @@ class PropertyApiController extends Controller
 
     protected function transformProperty(Property $property, ?array $availability = null): array
     {
+        [$avgRating, $reviewCount] = $this->getReviewSummary($property);
+
         return [
             'id' => $property->id,
             'destination_type'  => $property->destinationType ? [
@@ -267,8 +273,8 @@ class PropertyApiController extends Controller
             'max_guests'        => $property->max_guests,
             'bedrooms'          => $property->bedrooms,
             'bathrooms'         => $property->bathrooms,
-            'avg_rating'        => 4.5,
-            'review_count'      => 14,
+            'avg_rating'        => $avgRating,
+            'review_count'      => $reviewCount,
             'is_active'         => (bool) $property->is_active,
             'is_featured'       => (bool) $property->is_featured,
             'airbnb_property_url' => $property->airbnb_property_url,
@@ -304,24 +310,67 @@ class PropertyApiController extends Controller
                     'is_primary' => (bool) $image->is_primary,
                 ];
             })->values(),
-            'reviews' => [
-                [
-                    'rating' => 4.5,
-                    'name' => 'Marcus Westervelt',
-                    'comment' => 'Booked direct and saved almost $200 versus Airbnb. The house was even brighter than the photos and check-in took thirty seconds.',
-                    'date' => '1 month ago',
-                    'image' => null,
-                ],
-                [
-                    'rating' => 4.8,
-                    'name' => 'Marcus Westervelt',
-                    'comment' => 'The plunge pool at sunset is worth the trip alone. The team answered every message within minutes no middleman, no hold music.',
-                    'date' => '10 days ago',
-                    'image' => null,
-                ]
-
-            ],
             'availability'      => $availability,
         ];
+    }
+
+    /**
+     * Fetch avg_rating and review_count for a property from Hospitable.
+     * Returns [avg_rating, review_count] — both null/0 when not connected.
+     */
+    private function getReviewSummary(Property $property): array
+    {
+        if (!filled($property->hospitable_property_id)) {
+            return [null, 0];
+        }
+
+        /** @var \App\Services\Backend\HospitableService $hospitable */
+        $hospitable = app(HospitableService::class);
+        $result = $hospitable->getReviews($property->hospitable_property_id);
+
+        return [
+            $result['avg_rating']   ?? null,
+            $result['review_count'] ?? 0,
+        ];
+    }
+
+    /**
+     * Get reviews for a property from Hospitable API.
+     *
+     * GET /api/v1/properties/{slug}/reviews
+     */
+    public function getPropertyReviews(Request $request, string $slug): JsonResponse
+    {
+        try {
+            $property = Property::where('slug', $slug)
+                ->orWhere('id', $slug)
+                ->firstOrFail();
+
+            if (!filled($property->hospitable_property_id)) {
+                return $this->successResponse('Property reviews', [
+                    'connected'    => false,
+                    'reviews'      => [],
+                    'avg_rating'   => null,
+                    'review_count' => 0,
+                    'message'      => 'This property is not connected to Hospitable.',
+                ]);
+            }
+
+            $refresh = $request->boolean('refresh', false);
+
+            /** @var \App\Services\Backend\HospitableService $hospitable */
+            $hospitable = app(HospitableService::class);
+
+            $result = $hospitable->getReviews($property->hospitable_property_id, $refresh);
+
+            return $this->successResponse('Property reviews', $result);
+
+        } catch (\Throwable $e) {
+            return $this->errorResponse(
+                'Failed to fetch property reviews',
+                500,
+                ['error' => $e->getMessage()]
+            );
+        }
     }
 }

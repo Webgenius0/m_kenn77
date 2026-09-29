@@ -61,4 +61,9 @@ class User extends Authenticatable implements PasskeyUser
         }
         return $value;
     }
+
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
+    }
 }

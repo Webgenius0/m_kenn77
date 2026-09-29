@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 Route::controller(PropertyApiController::class)->prefix('properties')->group(function () {
     Route::get('/', 'index');
     Route::get('/featured', 'featuredProperties');
+    Route::get('/{slug}/reviews', 'getPropertyReviews');
     Route::get('/{slug}', 'show');
     // Route::get('/{slug}/calendar', 'calendar');
 });

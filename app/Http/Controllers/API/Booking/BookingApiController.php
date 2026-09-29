@@ -180,7 +180,7 @@ class BookingApiController extends Controller
                 ]);
 
                 return $this->successResponse('Booking created. Redirect to Stripe to pay.', [
-                    'booking'        => $this->transformBooking($booking),
+                    // 'booking'        => $this->transformBooking($booking),
                     'payment_method' => 'stripe',
                     'checkout_url'   => $stripeResult['checkout_url'],
                 ]);
@@ -204,7 +204,7 @@ class BookingApiController extends Controller
                 ]);
 
                 return $this->successResponse('Booking created. Redirect to PayPal to pay.', [
-                    'booking'        => $this->transformBooking($booking),
+                    // 'booking'        => $this->transformBooking($booking),
                     'payment_method' => 'paypal',
                     'order_id'       => $paypalResult['order_id'],
                     'approve_url'    => $paypalResult['approve_url'],

@@ -11,4 +11,5 @@ Route::controller(UserController::class)->prefix('user')->middleware(['auth:sanc
     Route::post('update-password', 'updatePassword');
     Route::post('notifications', 'updateNotifications');
     Route::post('delete-profile', 'deleteProfile');
+    Route::get('bookings', 'bookingsList');
 });

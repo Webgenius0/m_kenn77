@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Log;
 class HospitableService
 {
     protected const CACHE_KEY = 'hospitable_properties_cache';
-    protected const CACHE_TTL_SECONDS = 300;
+    protected const CACHE_TTL_SECONDS = 30;
     /**
      * Get the active Hospitable API key.
      */
@@ -590,5 +590,149 @@ class HospitableService
         }
 
         return $this->updateCalendar($propertyId, $dates);
+    }
+
+    /**
+     * Clear cached reviews for a specific property.
+     */
+    public function clearReviewsCache(string $propertyId): void
+    {
+        Cache::forget("hospitable_reviews_{$propertyId}");
+    }
+
+    /**
+     * Retrieve reviews for a property from Hospitable API.
+     *
+     * URL: GET https://public.api.hospitable.com/v2/properties/{uuid}/reviews
+     *
+     * @param string $propertyId Hospitable property UUID
+     * @param bool   $refresh    Force bypass cache
+     * @return array{connected: bool, reviews: array, avg_rating: float|null, review_count: int, message: ?string}
+     */
+    public function getReviews(string $propertyId, bool $refresh = false): array
+    {
+        if (!$this->isConfigured()) {
+            return [
+                'connected'    => false,
+                'reviews'      => [],
+                'avg_rating'   => null,
+                'review_count' => 0,
+                'message'      => 'Hospitable API key is not configured.',
+            ];
+        }
+
+        $cacheKey = "hospitable_reviews_{$propertyId}";
+
+        if ($refresh) {
+            Cache::forget($cacheKey);
+        }
+
+        return Cache::remember($cacheKey, self::CACHE_TTL_SECONDS, function () use ($propertyId) {
+            return $this->fetchReviewsFromApi($propertyId);
+        });
+    }
+
+    /**
+     * Fetch reviews data from Hospitable API via HTTP request.
+     */
+    protected function fetchReviewsFromApi(string $propertyId): array
+    {
+        $apiKey     = $this->getApiKey();
+        $baseUrl    = $this->getBaseUrl();
+        $requestUrl = "{$baseUrl}/properties/{$propertyId}/reviews";
+
+        Log::info('Hospitable Reviews API request', ['url' => $requestUrl]);
+
+        try {
+            $response = Http::withToken($apiKey)
+                ->withHeaders(['Accept' => 'application/json'])
+                ->timeout(15)
+                ->get($requestUrl);
+
+            if (!$response->successful()) {
+                $status   = $response->status();
+                $body     = $response->json();
+                $errorMsg = $body['message'] ?? $body['error'] ?? "Hospitable Reviews API responded with status {$status}.";
+
+                Log::warning('Hospitable Reviews API request failed', [
+                    'url'      => $requestUrl,
+                    'status'   => $status,
+                    'response' => substr($response->body(), 0, 500),
+                ]);
+
+                return [
+                    'connected'    => false,
+                    'reviews'      => [],
+                    'avg_rating'   => null,
+                    'review_count' => 0,
+                    'message'      => "Hospitable API Error ({$status}): {$errorMsg}",
+                ];
+            }
+
+            $json  = $response->json();
+            $items = $json['data'] ?? (isset($json[0]) ? $json : []);
+
+            $reviews = [];
+            $ratingSum   = 0;
+            $ratingCount = 0;
+
+            foreach ($items as $item) {
+                // Rating and review text are nested under the 'public' key
+                $public = $item['public'] ?? [];
+                $rating = isset($public['rating']) ? (float) $public['rating'] : null;
+
+                if ($rating !== null) {
+                    $ratingSum += $rating;
+                    $ratingCount++;
+                }
+
+                // $reviews[] = [
+                //     'id'              => $item['id'] ?? null,
+                //     'rating'          => $rating,
+                //     'rating_original' => $public['rating_platform_original'] ?? null,
+                //     'name'            => $item['reviewer']['name'] ?? $item['guest_name'] ?? null,
+                //     'comment'         => $public['review'] ?? null,
+                //     'response'        => $public['response'] ?? null,
+                //     'date'            => $item['reviewed_at'] ?? $item['submitted_at'] ?? $item['created_at'] ?? null,
+                //     'responded_at'    => $item['responded_at'] ?? null,
+                //     'image'           => $item['reviewer']['picture'] ?? $item['reviewer']['avatar'] ?? null,
+                //     'platform'        => $item['platform'] ?? null,
+                //     'detailed_ratings' => $item['private']['detailed_ratings'] ?? null,
+                // ];
+
+                $reviews[] = [
+                    'rating'  => $rating,
+                    'name'    => !empty($item['guest']) ? $item['guest']['first_name'] . ' ' . $item['guest']['last_name'] : 'Anonymous',
+                    'comment' => $public['review'] ?? null,
+                    'date'    => \Carbon\Carbon::parse($item['reviewed_at'])->diffForHumans()
+                ];
+            }
+
+            $avgRating = $ratingCount > 0
+                ? round($ratingSum / $ratingCount, 2)
+                : null;
+
+            return [
+                'connected'    => true,
+                'reviews'      => $reviews,
+                'avg_rating'   => $avgRating,
+                'review_count' => count($reviews),
+                'message'      => null,
+            ];
+
+        } catch (\Throwable $e) {
+            Log::error('Hospitable Reviews API exception', [
+                'property_id' => $propertyId,
+                'error'       => $e->getMessage(),
+            ]);
+
+            return [
+                'connected'    => false,
+                'reviews'      => [],
+                'avg_rating'   => null,
+                'review_count' => 0,
+                'message'      => 'Unable to connect to Hospitable Reviews API: ' . $e->getMessage(),
+            ];
+        }
     }
 }

@@ -154,8 +154,6 @@ class PaymentApiController extends Controller
         $payload = $request->all();
         $event = $payload['type'] ?? '';
 
-        Log::info('Stripe Webhook received', ['type' => $event]);
-
         if ($event === 'checkout.session.completed') {
             $session = $payload['data']['object'] ?? [];
             $sessionId = $session['id'] ?? null;
@@ -260,12 +258,6 @@ class PaymentApiController extends Controller
             $checkIn = $booking->check_in->format('Y-m-d');
             $checkOut = $booking->check_out->format('Y-m-d');
 
-            Log::info("Syncing dates with Hospitable for booking #{$booking->booking_number}", [
-                'hospitable_property_id' => $hospitableId,
-                'check_in'               => $checkIn,
-                'check_out'              => $checkOut,
-            ]);
-
             $syncResult = $this->hospitableService->blockDates(
                 $hospitableId,
                 $checkIn,
@@ -279,7 +271,6 @@ class PaymentApiController extends Controller
                     'hospitable_synced'     => true,
                     'hospitable_sync_error' => null,
                 ]);
-                Log::info("Successfully blocked dates on Hospitable for booking #{$booking->booking_number}");
             } elseif ($syncResult['channel_restricted'] ?? false) {
                 // Property is connected to a channel (Airbnb, Booking.com, etc.)
                 // that restricts API calendar writes — this is expected, not an error.

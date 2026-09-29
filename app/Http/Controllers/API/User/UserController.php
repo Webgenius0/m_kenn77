@@ -18,9 +18,36 @@ class UserController extends Controller
 
     public function profile()
     {
-        $user = Auth::user();
-        return $this->successResponse('Profile details', $user);
+        $user = Auth::user()->load('bookings');
+
+        return $this->successResponse('Profile details', [
+            'user' => [
+                'id'                => $user->id,
+                'name'              => $user->name,
+                'first_name'        => $user->first_name,
+                'last_name'         => $user->last_name,
+                'username'          => $user->username,
+                'email'             => $user->email,
+                'phone_number'      => $user->phone_number,
+                'email_verified_at' => $user->email_verified_at,
+                'avatar'            => $user->avatar,
+                'role'              => $user->role,
+                'total_bookings'    => $user->bookings->count(),
+            ]
+        ]);
     }
+
+    public function bookingsList()
+    {
+        $user = Auth::user();
+
+        $bookings = $user->bookings()->with('property')->get();
+
+        return $this->successResponse('Bookings list', [
+            'bookings' => $bookings,
+        ]);
+    }
+
 
     public function update(Request $request)
     {
