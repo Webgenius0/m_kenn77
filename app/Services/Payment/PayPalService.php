@@ -146,7 +146,7 @@ class PayPalService
             ];
         }
 
-        $baseUrl = config('app.url', 'http://localhost:8000');
+        $baseUrl = config('app.frontend_url', 'http://localhost:8000');
         $returnUrl = $options['return_url'] ?? "{$baseUrl}/booking/confirmation?payment_method=paypal&booking_number={$booking->booking_number}";
         $cancelUrl = $options['cancel_url'] ?? "{$baseUrl}/booking/cancelled?booking_number={$booking->booking_number}";
 

@@ -95,7 +95,7 @@ class StripeService
         $currency = strtolower($booking->currency ?: 'usd');
 
         // URL configuration
-        $baseUrl = config('app.url', 'http://localhost:5000');
+        $baseUrl = config('app.frontend_url', 'http://localhost:5000');
         $successUrl = "{$baseUrl}/booking/confirmation?session_id={CHECKOUT_SESSION_ID}&booking_number={$booking->booking_number}";
         $cancelUrl = "{$baseUrl}/booking/cancelled?booking_number={$booking->booking_number}";
 
