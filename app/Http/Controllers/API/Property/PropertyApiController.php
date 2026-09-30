@@ -339,6 +339,41 @@ class PropertyApiController extends Controller
      *
      * GET /api/v1/properties/{slug}/reviews
      */
+    // public function getPropertyReviews(Request $request, string $slug): JsonResponse
+    // {
+    //     try {
+    //         $property = Property::where('slug', $slug)
+    //             ->orWhere('id', $slug)
+    //             ->firstOrFail();
+
+    //         if (!filled($property->hospitable_property_id)) {
+    //             return $this->successResponse('Property reviews', [
+    //                 'connected'    => false,
+    //                 'reviews'      => [],
+    //                 'avg_rating'   => null,
+    //                 'review_count' => 0,
+    //                 'message'      => 'This property is not connected to Hospitable.',
+    //             ]);
+    //         }
+
+    //         $refresh = $request->boolean('refresh', false);
+
+    //         /** @var \App\Services\Backend\HospitableService $hospitable */
+    //         $hospitable = app(HospitableService::class);
+
+    //         $result = $hospitable->getReviews($property->hospitable_property_id, $refresh);
+
+    //         return $this->successResponse('Property reviews', $result);
+
+    //     } catch (\Throwable $e) {
+    //         return $this->errorResponse(
+    //             'Failed to fetch property reviews',
+    //             500,
+    //             ['error' => $e->getMessage()]
+    //         );
+    //     }
+    // }
+
     public function getPropertyReviews(Request $request, string $slug): JsonResponse
     {
         try {
@@ -352,16 +387,56 @@ class PropertyApiController extends Controller
                     'reviews'      => [],
                     'avg_rating'   => null,
                     'review_count' => 0,
+                    'pagination'   => [
+                        'current_page' => 1,
+                        'per_page'     => 5,
+                        'total'        => 0,
+                        'last_page'    => 1,
+                    ],
                     'message'      => 'This property is not connected to Hospitable.',
                 ]);
             }
 
             $refresh = $request->boolean('refresh', false);
 
+            $perPage = min(
+                max((int) $request->input('per_page', 5), 1),
+                100
+            );
+
+            $page = max((int) $request->input('page', 1), 1);
+
             /** @var \App\Services\Backend\HospitableService $hospitable */
             $hospitable = app(HospitableService::class);
 
-            $result = $hospitable->getReviews($property->hospitable_property_id, $refresh);
+            $result = $hospitable->getReviews(
+                $property->hospitable_property_id,
+                $refresh
+            );
+
+            $reviews = collect($result['reviews'] ?? []);
+
+            $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
+                $reviews->forPage($page, $perPage)->values(),
+                $reviews->count(),
+                $perPage,
+                $page,
+                [
+                    'path' => $request->url(),
+                    'query' => $request->query(),
+                ]
+            );
+
+            $result['reviews'] = $paginator->items();
+
+            $result['pagination'] = [
+                'current_page' => $paginator->currentPage(),
+                'per_page'     => $paginator->perPage(),
+                'total'        => $paginator->total(),
+                'last_page'    => $paginator->lastPage(),
+                'from'         => $paginator->firstItem(),
+                'to'           => $paginator->lastItem(),
+            ];
 
             return $this->successResponse('Property reviews', $result);
 
@@ -373,4 +448,5 @@ class PropertyApiController extends Controller
             );
         }
     }
+
 }

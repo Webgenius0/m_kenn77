@@ -93,6 +93,12 @@ const items: MenuItem[] = [
         ],
     },
     {
+        title: 'Bookings',
+        href: '/admin/bookings',
+        icon_name: 'book_online',
+        icon: 'material-symbols-outlined menu-icon',
+    },
+    {
         title: 'Queue Management',
         href: '',
         icon_name: 'queue',
@@ -157,11 +163,7 @@ export default function MainSidebar() {
     const page = usePage();
     const { setting } = page.props as any;
 
-    const theme = document.body.getAttribute('data-theme');
-
-    const [openMenu, setOpenMenu] = useState<string | null>(
-        null
-    );
+    const [openMenu, setOpenMenu] = useState<string | null>(null);
     const { resolvedAppearance } = useAppearance();
 
     const logo =
@@ -170,6 +172,7 @@ export default function MainSidebar() {
             : setting?.light_logo;
 
     const toggleSidebar = () => {
+        if (typeof document === 'undefined') return;
         const current = document.body.getAttribute('sidebar-data-theme');
 
         document.body.setAttribute(
@@ -177,6 +180,7 @@ export default function MainSidebar() {
             current === 'sidebar-hide' ? 'sidebar-show' : 'sidebar-hide',
         );
     };
+
 
     return (
         <div className="sidebar-area" id="sidebar-area">

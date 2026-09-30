@@ -13,9 +13,9 @@
 // }
 import { usePage } from "@inertiajs/react";
 
-export default function AppLogo() {
+export default function AppLogo({ className, style, ...props }: React.ImgHTMLAttributes<HTMLImageElement> & { className?: string }) {
     const { setting } = usePage().props as any;
-    const theme = document.body.getAttribute('data-theme');
+    const theme = typeof document !== 'undefined' ? document.body.getAttribute('data-theme') : null;
 
     return (
         (theme == 'dark' ?

@@ -175,7 +175,7 @@ export default function Dashboard({ newTenants, featuredProperties }: DashboardP
                                             </h2>
                                         </div>
                                         <div className="flex-shrink-0 ms-3">
-                                            <div className="bg-primary text-white text-center rounded-circle d-block" style={{ width: "75px", height: "75px", lineHeight: "105px" }}>
+                                            <div className="bg-primary text-white text-center rounded-circle d-block" style={{ width: "52px", height: "52px", lineHeight: "80px" }}>
                                                 <i className="material-symbols-outlined fs-40">
                                                     calendar_month
                                                 </i>
@@ -209,7 +209,7 @@ export default function Dashboard({ newTenants, featuredProperties }: DashboardP
                                             </h2>
                                         </div>
                                         <div className="flex-shrink-0 ms-3">
-                                            <div className="bg-info text-white text-center rounded-circle d-block" style={{ width: "75px", height: "75px", lineHeight: "105px" }}>
+                                            <div className="bg-info text-white text-center rounded-circle d-block" style={{ width: "52px", height: "52px", lineHeight: "80px" }}>
                                                 <i className="material-symbols-outlined fs-40">
                                                     group
                                                 </i>
@@ -247,7 +247,7 @@ export default function Dashboard({ newTenants, featuredProperties }: DashboardP
                                             </h2>
                                         </div>
                                         <div className="flex-shrink-0 ms-3">
-                                            <div className="bg-warning text-white text-center rounded-circle d-block" style={{ width: "75px", height: "75px", lineHeight: "116px" }}>
+                                            <div className="bg-warning text-white text-center rounded-circle d-block" style={{ width: "52px", height: "52px", lineHeight: "80px" }}>
                                                 <i className="material-symbols-outlined fs-50">
                                                     attach_money
                                                 </i>
@@ -489,7 +489,7 @@ export default function Dashboard({ newTenants, featuredProperties }: DashboardP
                                 <h3>
                                     Featured Properties
                                 </h3>
-                                <div className="dropdown select-dropdown without-border">
+                                {/* <div className="dropdown select-dropdown without-border">
                                     <button aria-expanded="false" className="dropdown-toggle bg-transparent text-secondary fs-15" data-bs-toggle="dropdown">
                                         This Month
                                     </button>
@@ -515,7 +515,7 @@ export default function Dashboard({ newTenants, featuredProperties }: DashboardP
                                             </button>
                                         </li>
                                     </ul>
-                                </div>
+                                </div> */}
                             </div>
                             <div className="default-table-area without-header table-top-selling-products">
                                 <div className="table-responsive">

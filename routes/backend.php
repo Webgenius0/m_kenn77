@@ -17,6 +17,7 @@ use App\Http\Controllers\Web\Backend\RuleController;
 use App\Http\Controllers\Web\Backend\QueueController;
 use App\Http\Controllers\Web\Backend\SystemSettingsController;
 use App\Http\Controllers\Web\Backend\UserController;
+use App\Http\Controllers\Web\Backend\BookingController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
@@ -46,6 +47,12 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::get('/rules/{rule}/edit', [RuleController::class, 'edit'])->name('admin.rules.edit');
     Route::put('/rules/{rule}', [RuleController::class, 'update'])->name('admin.rules.update');
     Route::delete('/rules/{rule}', [RuleController::class, 'destroy'])->name('admin.rules.destroy');
+
+    // Booking management routes
+    Route::get('/bookings', [BookingController::class, 'index'])->name('admin.bookings.index');
+    Route::get('/bookings/{booking}', [BookingController::class, 'show'])->name('admin.bookings.show');
+    Route::put('/bookings/{booking}/status', [BookingController::class, 'updateStatus'])->name('admin.bookings.update-status');
+    Route::delete('/bookings/{booking}', [BookingController::class, 'destroy'])->name('admin.bookings.destroy');
 
     // Property management routes
     Route::get('/properties', [PropertyController::class, 'index'])->name('admin.properties.index');
