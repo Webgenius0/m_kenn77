@@ -1,6 +1,6 @@
 import './styles.css';
 
-type TimeValue = Date | number;
+type TimeValue = Date | number | string;
 
 export interface BookingInformation {
     bookingId: string;
@@ -33,8 +33,16 @@ interface TimeLineChartProps {
     height?: number;
 }
 
-const asTimestamp = (value: TimeValue) =>
-    value instanceof Date ? value.getTime() : value;
+const asTimestamp = (value: TimeValue): number => {
+    if (value instanceof Date) {
+        return value.getTime();
+    }
+    if (typeof value === 'string') {
+        const parsed = new Date(value).getTime();
+        return isNaN(parsed) ? 0 : parsed;
+    }
+    return Number(value);
+};
 
 const formatDate = (value: number) =>
     new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
@@ -73,33 +81,47 @@ export default function TimeLineChart({
                 </div>
             </div>
             <div className="timeline-chart__body">
-                {items.map((item) => {
-                    const lanes: TimeLineRange[][] = [];
-                    const sortedRanges = [...itemRanges(item)].sort(
-                        (first, second) => asTimestamp(first.start) - asTimestamp(second.start),
-                    );
+                {items.length === 0 ? (
+                    <div className="text-center py-4 text-muted fs-14">No properties or bookings to display</div>
+                ) : (
+                    items.map((item) => {
+                        const lanes: TimeLineRange[][] = [];
+                        const sortedRanges = [...itemRanges(item)].sort(
+                            (first, second) => asTimestamp(first.start) - asTimestamp(second.start),
+                        );
 
-                    sortedRanges.forEach((range) => {
-                        const rangeStart = asTimestamp(range.start);
-                        const availableLane = lanes.find((lane) => {
-                            const previousRange = lane[lane.length - 1];
+                        sortedRanges.forEach((range) => {
+                            const rangeStart = asTimestamp(range.start);
+                            const availableLane = lanes.find((lane) => {
+                                const previousRange = lane[lane.length - 1];
 
-                            return asTimestamp(previousRange.end) < rangeStart;
+                                return asTimestamp(previousRange.end) < rangeStart;
+                            });
+
+                            if (availableLane) {
+                                availableLane.push(range);
+                            } else {
+                                lanes.push([range]);
+                            }
                         });
 
-                        if (availableLane) {
-                            availableLane.push(range);
-                        } else {
-                            lanes.push([range]);
+                        if (lanes.length === 0) {
+                            return (
+                                <div className="timeline-chart__row" key={`${item.label}-empty`}>
+                                    <span className="timeline-chart__label" title={item.label}>
+                                        {item.label}
+                                    </span>
+                                    <div className="timeline-chart__track" />
+                                </div>
+                            );
                         }
-                    });
 
-                    return lanes.map((lane, laneIndex) => (
-                        <div className="timeline-chart__row" key={`${item.label}-${laneIndex}`}>
-                            <span className="timeline-chart__label">
-                                {laneIndex === 0 ? item.label : ''}
-                            </span>
-                            <div className="timeline-chart__track">
+                        return lanes.map((lane, laneIndex) => (
+                            <div className="timeline-chart__row" key={`${item.label}-${laneIndex}`}>
+                                <span className="timeline-chart__label" title={item.label}>
+                                    {laneIndex === 0 ? item.label : ''}
+                                </span>
+                                <div className="timeline-chart__track">
                                 {lane.map((range, index) => {
                                 const bookingStart = asTimestamp(range.start);
                                 const bookingEnd = asTimestamp(range.end);
@@ -134,7 +156,8 @@ export default function TimeLineChart({
                             </div>
                         </div>
                     ));
-                })}
+                })
+            )}
             </div>
         </div>
     );
