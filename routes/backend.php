@@ -18,11 +18,19 @@ use App\Http\Controllers\Web\Backend\QueueController;
 use App\Http\Controllers\Web\Backend\SystemSettingsController;
 use App\Http\Controllers\Web\Backend\UserController;
 use App\Http\Controllers\Web\Backend\BookingController;
+use App\Http\Controllers\Web\Backend\PaymentController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard.index');
+
+    // Payment tracking and management routes
+    Route::get('/payments', [PaymentController::class, 'index'])->name('admin.payments.index');
+    Route::get('/payments/export/csv', [PaymentController::class, 'export'])->name('admin.payments.export');
+    Route::get('/payments/{payment}', [PaymentController::class, 'show'])->name('admin.payments.show');
+    Route::put('/payments/{payment}/status', [PaymentController::class, 'updateStatus'])->name('admin.payments.update-status');
+    Route::delete('/payments/{payment}', [PaymentController::class, 'destroy'])->name('admin.payments.destroy');
 
     // Destination type management routes
     Route::get('/destination-types', [DestinationTypeController::class, 'index'])->name('admin.destination-types.index');

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web\Backend;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
+use App\Models\Payment;
 use App\Models\Property;
 use App\Models\User;
 use Carbon\Carbon;
@@ -176,6 +177,57 @@ class DashboardController extends Controller
             ];
         })->values()->all();
 
+        // 9. Payment Tracking Management System Metrics
+        $totalPaymentsCount = Payment::count();
+        $completedPaymentsQuery = Payment::whereIn('status', ['completed', 'paid']);
+        $totalCollectedAmount = (float) (clone $completedPaymentsQuery)->sum('amount');
+        $completedPaymentsCount = (clone $completedPaymentsQuery)->count();
+
+        $pendingPaymentsQuery = Payment::where('status', 'pending');
+        $pendingPaymentsCount = (clone $pendingPaymentsQuery)->count();
+        $pendingPaymentsAmount = (float) (clone $pendingPaymentsQuery)->sum('amount');
+
+        $refundedPaymentsQuery = Payment::whereIn('status', ['refunded', 'failed']);
+        $refundedPaymentsCount = (clone $refundedPaymentsQuery)->count();
+        $refundedPaymentsAmount = (float) (clone $refundedPaymentsQuery)->sum('amount');
+
+        $thisMonthPaid = (float) Payment::whereIn('status', ['completed', 'paid'])
+            ->whereBetween('created_at', [$monthStart, $monthEnd])
+            ->sum('amount');
+        $prevMonthPaid = (float) Payment::whereIn('status', ['completed', 'paid'])
+            ->whereBetween('created_at', [$prevMonthStart, $prevMonthEnd])
+            ->sum('amount');
+        $paymentGrowth = $prevMonthPaid > 0
+            ? round((($thisMonthPaid - $prevMonthPaid) / $prevMonthPaid) * 100, 1)
+            : ($thisMonthPaid > 0 ? 100.0 : 0.0);
+
+        $stripePaymentsCount = Payment::where('payment_method', 'stripe')->count();
+        $stripeCollectedAmount = (float) Payment::where('payment_method', 'stripe')->whereIn('status', ['completed', 'paid'])->sum('amount');
+        $paypalPaymentsCount = Payment::where('payment_method', 'paypal')->count();
+        $paypalCollectedAmount = (float) Payment::where('payment_method', 'paypal')->whereIn('status', ['completed', 'paid'])->sum('amount');
+
+        $recentPayments = Payment::with(['booking.property', 'booking.user'])
+            ->latest()
+            ->limit(6)
+            ->get()
+            ->map(function ($payment) {
+                return [
+                    'id'             => $payment->id,
+                    'transaction_id' => $payment->transaction_id ?: ('TXN-' . str_pad($payment->id, 6, '0', STR_PAD_LEFT)),
+                    'booking_id'     => $payment->booking_id,
+                    'booking_number' => $payment->booking?->booking_number ?: ('#BK-' . $payment->booking_id),
+                    'property_title' => $payment->booking?->property?->title ?: $payment->booking?->property?->name ?: 'N/A',
+                    'guest_name'     => $payment->booking?->guest_name ?: $payment->booking?->user?->name ?: 'Guest',
+                    'guest_email'    => $payment->booking?->guest_email ?: $payment->booking?->user?->email ?: 'N/A',
+                    'amount'         => (float) $payment->amount,
+                    'currency'       => $payment->currency ?: 'USD',
+                    'payment_method' => $payment->payment_method ?: 'card',
+                    'status'         => $payment->status ?: 'pending',
+                    'paid_at'        => $payment->paid_at?->format('M d, Y h:i A') ?? $payment->created_at?->format('M d, Y h:i A'),
+                    'created_at'     => $payment->created_at?->format('M d, Y'),
+                ];
+            });
+
         return Inertia::render('backend/dashboard/index', [
             'metrics' => [
                 'activeBookings' => [
@@ -201,6 +253,30 @@ class DashboardController extends Controller
                     'todaysSales' => $todaysSales,
                     'occupancyRate' => $occupancyRate,
                 ],
+            ],
+            'paymentTracking' => [
+                'totalCollectedAmount'   => $totalCollectedAmount,
+                'totalPaymentsCount'     => $totalPaymentsCount,
+                'completedCount'         => $completedPaymentsCount,
+                'completedAmount'        => $totalCollectedAmount,
+                'pendingCount'           => $pendingPaymentsCount,
+                'pendingAmount'          => $pendingPaymentsAmount,
+                'refundedCount'          => $refundedPaymentsCount,
+                'refundedAmount'         => $refundedPaymentsAmount,
+                'thisMonthPaid'          => $thisMonthPaid,
+                'growthRate'             => $paymentGrowth,
+                'isPositive'             => $paymentGrowth >= 0,
+                'gateways' => [
+                    'stripe' => [
+                        'count'  => $stripePaymentsCount,
+                        'amount' => $stripeCollectedAmount,
+                    ],
+                    'paypal' => [
+                        'count'  => $paypalPaymentsCount,
+                        'amount' => $paypalCollectedAmount,
+                    ],
+                ],
+                'recentPayments'         => $recentPayments,
             ],
             'topProperty' => $topProperty,
             'newTenants' => [

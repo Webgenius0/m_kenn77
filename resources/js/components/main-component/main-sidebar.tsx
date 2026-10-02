@@ -99,6 +99,12 @@ const items: MenuItem[] = [
         icon: 'material-symbols-outlined menu-icon',
     },
     {
+        title: 'Payment Tracking',
+        href: '/admin/payments',
+        icon_name: 'payments',
+        icon: 'material-symbols-outlined menu-icon',
+    },
+    {
         title: 'Queue Management',
         href: '',
         icon_name: 'queue',

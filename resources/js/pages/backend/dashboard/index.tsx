@@ -76,8 +76,44 @@ type TimelineItem = {
     ranges: TimelineRange[];
 };
 
+type PaymentTrackingRecent = {
+    id: number;
+    transaction_id: string;
+    booking_id: number;
+    booking_number: string;
+    property_title: string;
+    guest_name: string;
+    guest_email: string;
+    amount: number;
+    currency: string;
+    payment_method: string;
+    status: string;
+    paid_at: string;
+    created_at: string;
+};
+
+type PaymentTrackingData = {
+    totalCollectedAmount: number;
+    totalPaymentsCount: number;
+    completedCount: number;
+    completedAmount: number;
+    pendingCount: number;
+    pendingAmount: number;
+    refundedCount: number;
+    refundedAmount: number;
+    thisMonthPaid: number;
+    growthRate: number;
+    isPositive: boolean;
+    gateways: {
+        stripe: { count: number; amount: number };
+        paypal: { count: number; amount: number };
+    };
+    recentPayments: PaymentTrackingRecent[];
+};
+
 type DashboardProps = {
     metrics: DashboardMetrics;
+    paymentTracking?: PaymentTrackingData;
     topProperty: TopProperty;
     newTenants: {
         count: number;
@@ -91,6 +127,7 @@ type DashboardProps = {
 
 export default function Dashboard({
     metrics,
+    paymentTracking,
     topProperty,
     newTenants,
     featuredProperties = [],
@@ -603,6 +640,249 @@ export default function Dashboard({
                         </div>
                     </div>
                 </div>
+
+                {/* Payment Tracking Management System on Dashboard */}
+                <div className="row">
+                    <div className="col-12">
+                        <div className="card bg-white p-20 rounded-10 border border-white mb-4 shadow-sm">
+                            {/* Section Header */}
+                            <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4 pb-3 border-bottom">
+                                <div>
+                                    <div className="d-flex align-items-center gap-2 mb-1">
+                                        <div
+                                            className="d-flex align-items-center justify-content-center rounded-circle bg-primary-subtle text-primary"
+                                            style={{ width: 36, height: 36 }}
+                                        >
+                                            <span className="material-symbols-outlined fs-20">payments</span>
+                                        </div>
+                                        <h3 className="mb-0 fs-18 fw-bold">Payment Tracking Management System</h3>
+                                        <span className="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1 fs-12 fw-semibold">
+                                            Live Verification
+                                        </span>
+                                    </div>
+                                    <p className="fs-13 text-muted mb-0">
+                                        Real-time tracking of booking transactions, automated Stripe & PayPal gateway settlements, and customer payments.
+                                    </p>
+                                </div>
+
+                                <div className="d-flex align-items-center gap-2">
+                                    <Link
+                                        href="/admin/payments"
+                                        className="btn btn-sm btn-primary d-flex align-items-center gap-1 fs-13 px-3 py-2 fw-medium"
+                                        id="dashboard-open-payment-system"
+                                    >
+                                        <span>Full Payment Tracker</span>
+                                        <span className="material-symbols-outlined fs-16">arrow_forward</span>
+                                    </Link>
+                                </div>
+                            </div>
+
+                            {/* Payment Metric Cards */}
+                            <div className="row g-3 mb-4">
+                                <div className="col-sm-6 col-xl-3">
+                                    <div className="p-3 rounded-10 border bg-light-subtle">
+                                        <div className="d-flex align-items-center justify-content-between mb-2">
+                                            <span className="fs-12 text-muted fw-semibold text-uppercase">Total Settled Volume</span>
+                                            <span className="material-symbols-outlined text-success fs-20">verified</span>
+                                        </div>
+                                        <div className="fs-22 fw-bold text-dark mb-1">
+                                            ${(paymentTracking?.completedAmount ?? 0).toLocaleString(undefined, {
+                                                minimumFractionDigits: 2,
+                                                maximumFractionDigits: 2,
+                                            })}
+                                        </div>
+                                        <span className="fs-12 text-muted">
+                                            {paymentTracking?.completedCount ?? 0} successful transaction{(paymentTracking?.completedCount ?? 0) === 1 ? '' : 's'}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div className="col-sm-6 col-xl-3">
+                                    <div className="p-3 rounded-10 border bg-light-subtle">
+                                        <div className="d-flex align-items-center justify-content-between mb-2">
+                                            <span className="fs-12 text-muted fw-semibold text-uppercase">Pending In Pipeline</span>
+                                            <span className="material-symbols-outlined text-warning fs-20">hourglass_top</span>
+                                        </div>
+                                        <div className="fs-22 fw-bold text-dark mb-1">
+                                            ${(paymentTracking?.pendingAmount ?? 0).toLocaleString(undefined, {
+                                                minimumFractionDigits: 2,
+                                                maximumFractionDigits: 2,
+                                            })}
+                                        </div>
+                                        <span className="fs-12 text-muted">
+                                            {paymentTracking?.pendingCount ?? 0} awaiting settlement
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div className="col-sm-6 col-xl-3">
+                                    <div className="p-3 rounded-10 border bg-light-subtle">
+                                        <div className="d-flex align-items-center justify-content-between mb-2">
+                                            <span className="fs-12 text-muted fw-semibold text-uppercase">Stripe Gateway</span>
+                                            <span className="badge text-white px-2 py-1 fs-11 fw-bold" style={{ backgroundColor: '#635bff' }}>
+                                                STRIPE
+                                            </span>
+                                        </div>
+                                        <div className="fs-22 fw-bold text-dark mb-1">
+                                            ${(paymentTracking?.gateways?.stripe?.amount ?? 0).toLocaleString(undefined, {
+                                                minimumFractionDigits: 2,
+                                                maximumFractionDigits: 2,
+                                            })}
+                                        </div>
+                                        <span className="fs-12 text-muted">
+                                            {paymentTracking?.gateways?.stripe?.count ?? 0} online payments
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div className="col-sm-6 col-xl-3">
+                                    <div className="p-3 rounded-10 border bg-light-subtle">
+                                        <div className="d-flex align-items-center justify-content-between mb-2">
+                                            <span className="fs-12 text-muted fw-semibold text-uppercase">PayPal Gateway</span>
+                                            <span className="badge text-white px-2 py-1 fs-11 fw-bold" style={{ backgroundColor: '#003087' }}>
+                                                PAYPAL
+                                            </span>
+                                        </div>
+                                        <div className="fs-22 fw-bold text-dark mb-1">
+                                            ${(paymentTracking?.gateways?.paypal?.amount ?? 0).toLocaleString(undefined, {
+                                                minimumFractionDigits: 2,
+                                                maximumFractionDigits: 2,
+                                            })}
+                                        </div>
+                                        <span className="fs-12 text-muted">
+                                            {paymentTracking?.gateways?.paypal?.count ?? 0} PayPal payments
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Recent Transactions Table */}
+                            <div className="default-table-area table-responsive">
+                                <table className="table align-middle mb-0">
+                                    <thead className="table-light">
+                                        <tr className="text-muted fs-12 text-uppercase fw-semibold">
+                                            <th className="ps-2 py-2">Transaction ID</th>
+                                            <th>Booking Reference</th>
+                                            <th>Guest</th>
+                                            <th>Gateway</th>
+                                            <th>Amount</th>
+                                            <th>Status</th>
+                                            <th>Settled Date</th>
+                                            <th className="text-end pe-2">Audit Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {paymentTracking?.recentPayments && paymentTracking.recentPayments.length > 0 ? (
+                                            paymentTracking.recentPayments.map((payment) => (
+                                                <tr key={payment.id} className="hover-shadow-sm">
+                                                    <td className="ps-2">
+                                                        <span
+                                                            className="badge bg-light text-dark border font-monospace fs-12 px-2 py-1 text-truncate d-inline-block"
+                                                            style={{ maxWidth: 160 }}
+                                                            title={payment.transaction_id}
+                                                        >
+                                                            {payment.transaction_id}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <Link
+                                                            href={`/admin/bookings/${payment.booking_id}`}
+                                                            className="fw-bold text-primary hover-text text-decoration-none fs-13 d-block"
+                                                        >
+                                                            {payment.booking_number}
+                                                        </Link>
+                                                        <span className="fs-12 text-muted text-truncate d-block" style={{ maxWidth: 150 }} title={payment.property_title}>
+                                                            {payment.property_title}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <div className="fw-medium fs-13 text-dark text-truncate" style={{ maxWidth: 140 }}>
+                                                            {payment.guest_name}
+                                                        </div>
+                                                        <div className="fs-11 text-muted text-truncate" style={{ maxWidth: 140 }}>
+                                                            {payment.guest_email}
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        {payment.payment_method === 'stripe' ? (
+                                                            <span
+                                                                className="badge text-white px-2 py-1 fw-bold fs-11"
+                                                                style={{ backgroundColor: '#635bff' }}
+                                                            >
+                                                                STRIPE
+                                                            </span>
+                                                        ) : payment.payment_method === 'paypal' ? (
+                                                            <span
+                                                                className="badge text-white px-2 py-1 fw-bold fs-11"
+                                                                style={{ backgroundColor: '#003087' }}
+                                                            >
+                                                                PAYPAL
+                                                            </span>
+                                                        ) : (
+                                                            <span className="badge bg-secondary px-2 py-1 text-uppercase fs-11">
+                                                                {payment.payment_method || 'CARD'}
+                                                            </span>
+                                                        )}
+                                                    </td>
+                                                    <td>
+                                                        <div className="fw-bold fs-14 text-dark">
+                                                            ${payment.amount.toLocaleString(undefined, {
+                                                                minimumFractionDigits: 2,
+                                                                maximumFractionDigits: 2,
+                                                            })}
+                                                        </div>
+                                                        <span className="fs-11 text-muted">{payment.currency}</span>
+                                                    </td>
+                                                    <td>
+                                                        {['completed', 'paid'].includes(payment.status.toLowerCase()) ? (
+                                                            <span className="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1 fs-12 fw-semibold">
+                                                                Completed
+                                                            </span>
+                                                        ) : payment.status.toLowerCase() === 'pending' ? (
+                                                            <span className="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-2 py-1 fs-12 fw-semibold">
+                                                                Pending
+                                                            </span>
+                                                        ) : payment.status.toLowerCase() === 'refunded' ? (
+                                                            <span className="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 px-2 py-1 fs-12 fw-semibold">
+                                                                Refunded
+                                                            </span>
+                                                        ) : (
+                                                            <span className="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-2 py-1 fs-12 fw-semibold">
+                                                                {payment.status}
+                                                            </span>
+                                                        )}
+                                                    </td>
+                                                    <td>
+                                                        <span className="fs-12 text-dark">
+                                                            {payment.paid_at || payment.created_at}
+                                                        </span>
+                                                    </td>
+                                                    <td className="text-end pe-2">
+                                                        <Link
+                                                            href={`/admin/payments/${payment.id}`}
+                                                            className="btn btn-sm btn-outline-primary px-2 py-1 fs-12 d-inline-flex align-items-center gap-1"
+                                                            title="Inspect Payment Details"
+                                                        >
+                                                            <span>Inspect</span>
+                                                            <span className="material-symbols-outlined fs-14">arrow_forward</span>
+                                                        </Link>
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        ) : (
+                                            <tr>
+                                                <td colSpan={8} className="text-center py-4 text-muted fs-14">
+                                                    No recent payment transactions recorded yet.
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </>
     );
