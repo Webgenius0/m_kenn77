@@ -29,7 +29,7 @@ class LogController extends Controller
 
         $logQuery->scan();
 
-        $logs = $logQuery->paginate(50);
+        $logs = $logQuery->paginate(20);
         $logs->withPath(route('admin.log.index'));
 
         return Inertia::render('backend/logs/index', [
