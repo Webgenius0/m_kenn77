@@ -120,18 +120,19 @@ export default function Index({ contacts, filters }: Props) {
                             <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 p-20">
                                 <h3 className="mb-0">Contacts</h3>
 
-                                <button
-                                    className="btn btn-success text-white"
-                                    onClick={() => {
-                                        router.get("/admin/contacts/export/csv", {
-                                            search,
-                                            email,
-                                            date,
-                                        });
-                                    }}
+                                <a
+                                    href={`/admin/contacts/export/csv?${new URLSearchParams(
+                                        Object.fromEntries(
+                                            Object.entries({ search, email, date }).filter(([, v]) => v !== "")
+                                        )
+                                    ).toString()}`}
+                                    className="btn btn-success text-white text-decoration-none"
                                 >
+                                    <i className="material-symbols-outlined fs-16 me-1" style={{ verticalAlign: "middle" }}>
+                                        download
+                                    </i>
                                     Export CSV
-                                </button>
+                                </a>
                             </div>
 
                             {/* Filters */}

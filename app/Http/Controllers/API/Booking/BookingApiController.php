@@ -186,7 +186,7 @@ class BookingApiController extends Controller
                 ]);
 
             } elseif ($paymentMethod === 'paypal') {
-                $paypalResult = $this->payPalService->createOrder($booking, $urlOptions);
+                $paypalResult = $this->payPalService->createOrder($booking);
 
                 if (!$paypalResult['success']) {
                     return $this->errorResponse($paypalResult['message'], 400);

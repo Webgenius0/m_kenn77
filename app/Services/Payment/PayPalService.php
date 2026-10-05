@@ -120,10 +120,9 @@ class PayPalService
      * Create a PayPal order for a booking.
      *
      * @param Booking $booking
-     * @param array $options Optional return_url and cancel_url
      * @return array{success: bool, order_id: ?string, approve_url: ?string, message: ?string, raw: ?array}
      */
-    public function createOrder(Booking $booking, array $options = []): array
+    public function createOrder(Booking $booking): array
     {
         if (!$this->isConfigured()) {
             return [
@@ -147,8 +146,8 @@ class PayPalService
         }
 
         $baseUrl = config('app.frontend_url', 'http://localhost:8000');
-        $returnUrl = $options['return_url'] ?? "{$baseUrl}/booking/confirmation?payment_method=paypal&booking_number={$booking->booking_number}";
-        $cancelUrl = $options['cancel_url'] ?? "{$baseUrl}/booking/cancelled?booking_number={$booking->booking_number}";
+        $returnUrl = "{$baseUrl}/booking/confirmation/paypal?booking_number={$booking->booking_number}";
+        $cancelUrl = "{$baseUrl}/booking/cancelled?booking_number={$booking->booking_number}";
 
         $propertyName = $booking->property->name ?? 'Property Booking';
         $formattedAmount = number_format((float) $booking->total, 2, '.', '');

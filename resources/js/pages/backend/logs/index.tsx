@@ -30,6 +30,10 @@ export default function Index({
 }: Props) {
     const [selectedLog, setSelectedLog] = useState<Log | null>(null);
 
+    const exportCSV = () => {
+        window.location.href = '/admin/logs/export/csv';
+    };
+
     const clearLogs = () => {
         Swal.fire({
             title: "Clear Logs?",
@@ -71,12 +75,24 @@ export default function Index({
                             <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 p-20">
                                 <h4 className="mb-0">System Logs</h4>
 
-                                <button
-                                    className="btn btn-danger text-white btn-sm"
-                                    onClick={clearLogs}
-                                >
-                                    Clear Logs
-                                </button>
+                                <div className="d-flex gap-2">
+                                    <a
+                                        href="/admin/logs/export/csv"
+                                        className="btn btn-success text-white btn-sm text-decoration-none"
+                                    >
+                                        <i className="material-symbols-outlined fs-16 me-1" style={{ verticalAlign: "middle" }}>
+                                            download
+                                        </i>
+                                        Export CSV
+                                    </a>
+
+                                    <button
+                                        className="btn btn-danger text-white btn-sm"
+                                        onClick={clearLogs}
+                                    >
+                                        Clear Logs
+                                    </button>
+                                </div>
                             </div>
 
                             <div className="default-table-area mx-minus-1">

@@ -139,6 +139,7 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
 
     // Logs controller
     Route::get('/logs', [LogController::class, 'index'])->name('admin.log.index');
+    Route::get('/logs/export/csv', [LogController::class, 'export'])->name('admin.log.export');
     Route::delete('/logs', [LogController::class, 'clear'])->name('admin.log.clear');
 
     Route::get('/queues', [QueueController::class, 'index'])->name('admin.queues.index');
