@@ -66,6 +66,10 @@ const items: MenuItem[] = [
                 title: 'Get In Touch',
                 href: '/admin/contacts',
             },
+            {
+                title: 'Newsletters',
+                href: '/admin/newsletter',
+            },
         ],
     },
     {

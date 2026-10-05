@@ -13,6 +13,7 @@ Route::prefix('v1')->group(function () {
     require base_path('routes/api/v1/user.php');
     require base_path('routes/api/v1/settings.php');
     require base_path('routes/api/v1/contacts.php');
+    require base_path('routes/api/v1/newsletter.php');
     require base_path('routes/api/v1/coupons.php');
     require base_path('routes/api/v1/properties.php');
     require base_path('routes/api/v1/destination-types.php');

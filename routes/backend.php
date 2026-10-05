@@ -11,6 +11,7 @@ use App\Http\Controllers\Web\Backend\DynamicPageController;
 use App\Http\Controllers\Web\Backend\FaqController;
 use App\Http\Controllers\Web\Backend\GalleryController;
 use App\Http\Controllers\Web\Backend\LogController;
+use App\Http\Controllers\Web\Backend\NewsletterSubscriberController;
 use App\Http\Controllers\Web\Backend\ProfileController;
 use App\Http\Controllers\Web\Backend\PropertyController;
 use App\Http\Controllers\Web\Backend\RuleController;
@@ -141,6 +142,11 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::get('/logs', [LogController::class, 'index'])->name('admin.log.index');
     Route::get('/logs/export/csv', [LogController::class, 'export'])->name('admin.log.export');
     Route::delete('/logs', [LogController::class, 'clear'])->name('admin.log.clear');
+
+    // Newsletter subscribers
+    Route::get('/newsletter', [NewsletterSubscriberController::class, 'index'])->name('admin.newsletter.index');
+    Route::get('/newsletter/export/csv', [NewsletterSubscriberController::class, 'export'])->name('admin.newsletter.export');
+    Route::delete('/newsletter/{id}', [NewsletterSubscriberController::class, 'destroy'])->name('admin.newsletter.destroy');
 
     Route::get('/queues', [QueueController::class, 'index'])->name('admin.queues.index');
     Route::get('/failed-jobs', [QueueController::class, 'failed'])->name('admin.failed-jobs.index');
