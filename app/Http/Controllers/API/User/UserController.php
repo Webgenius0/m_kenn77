@@ -18,21 +18,24 @@ class UserController extends Controller
 
     public function profile()
     {
-        $user = Auth::user()->load('bookings');
+        $user = Auth::user();
 
         return $this->successResponse('Profile details', [
             'user' => [
-                'id'                => $user->id,
-                'name'              => $user->name,
-                'first_name'        => $user->first_name,
-                'last_name'         => $user->last_name,
-                'username'          => $user->username,
-                'email'             => $user->email,
-                'phone_number'      => $user->phone_number,
-                'email_verified_at' => $user->email_verified_at,
-                'avatar'            => $user->avatar,
-                'role'              => $user->role,
-                'total_bookings'    => $user->bookings->count(),
+                'id'                      => $user->id,
+                'name'                    => $user->name,
+                'first_name'              => $user->first_name,
+                'last_name'               => $user->last_name,
+                'username'                => $user->username,
+                'email'                   => $user->email,
+                'phone_number'            => $user->phone_number,
+                'email_verified_at'       => $user->email_verified_at,
+                'avatar'                  => $user->avatar,
+                'role'                    => $user->role,
+                'total_bookings'          => $user->bookings()->count(),
+                'total_upcoming_bookings' => $user->bookings()
+                    ->where('check_in', '>=', now()->startOfDay())
+                    ->count(),
             ]
         ]);
     }
