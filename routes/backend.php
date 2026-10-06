@@ -20,6 +20,7 @@ use App\Http\Controllers\Web\Backend\SystemSettingsController;
 use App\Http\Controllers\Web\Backend\UserController;
 use App\Http\Controllers\Web\Backend\BookingController;
 use App\Http\Controllers\Web\Backend\PaymentController;
+use App\Http\Controllers\Web\Backend\ReviewController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
@@ -142,6 +143,14 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::get('/logs', [LogController::class, 'index'])->name('admin.log.index');
     Route::get('/logs/export/csv', [LogController::class, 'export'])->name('admin.log.export');
     Route::delete('/logs', [LogController::class, 'clear'])->name('admin.log.clear');
+
+    // Review management routes
+    Route::get('/reviews', [ReviewController::class, 'index'])->name('admin.reviews.index');
+    Route::get('/reviews/create', [ReviewController::class, 'create'])->name('admin.reviews.create');
+    Route::post('/reviews', [ReviewController::class, 'store'])->name('admin.reviews.store');
+    Route::get('/reviews/{review}/edit', [ReviewController::class, 'edit'])->name('admin.reviews.edit');
+    Route::put('/reviews/{review}', [ReviewController::class, 'update'])->name('admin.reviews.update');
+    Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('admin.reviews.destroy');
 
     // Newsletter subscribers
     Route::get('/newsletter', [NewsletterSubscriberController::class, 'index'])->name('admin.newsletter.index');

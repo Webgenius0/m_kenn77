@@ -482,17 +482,25 @@ export default function System({
                                     Footer Text
                                 </label>
 
-                                <EditorComponent
-                                    value={
-                                        data.footer_text
-                                    }
-                                    onChange={(value) =>
-                                        setData(
-                                            'footer_text',
-                                            value
-                                        )
-                                    }
-                                />
+                                <div className="form-floating">
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        id="footer_text"
+                                        placeholder="Footer Text"
+                                        value={data.footer_text}
+                                        onChange={(e) =>
+                                            setData(
+                                                'footer_text',
+                                                e.target.value
+                                            )
+                                        }
+                                    />
+
+                                    <label htmlFor="footer_text">
+                                        Footer text
+                                    </label>
+                                </div>
                             </div>
                         </div>
 

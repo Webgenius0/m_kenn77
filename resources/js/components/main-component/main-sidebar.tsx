@@ -43,6 +43,10 @@ const items: MenuItem[] = [
                 href: '/admin/faq/list',
             },
             {
+                title: 'Reviews',
+                href: '/admin/reviews',
+            },
+            {
                 title: 'Coupons',
                 href: '/admin/coupons',
             },

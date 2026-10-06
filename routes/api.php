@@ -19,4 +19,5 @@ Route::prefix('v1')->group(function () {
     require base_path('routes/api/v1/destination-types.php');
     require base_path('routes/api/v1/bookings.php');
     require base_path('routes/api/v1/payments.php');
+    require base_path('routes/api/v1/reviews.php');
 });
