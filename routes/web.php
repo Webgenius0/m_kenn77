@@ -15,22 +15,3 @@ Route::get('/logout', [PageController::class, 'logout'])->name('frontend.terms.l
 
 require __DIR__ . '/backend.php';
 require __DIR__ . '/settings.php';
-
-
-Route::get('/run-migrate', function () {
-    // Run the database migration
-    Artisan::call('migrate');
-    return 'Database migration successfully!';
-});
-// Run Migrate Fresh Route
-Route::get('/run-migrate-fresh', function () {
-    // Run the database migration
-    Artisan::call('migrate:fresh');
-    return 'Database migration fresh successfully!';
-});
-// Run Seeder Route
-Route::get('/run-seed', function () {
-    // Run the database seeding
-    Artisan::call('db:seed');
-    return 'Database seeding completed successfully!';
-});
