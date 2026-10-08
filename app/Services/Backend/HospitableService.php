@@ -681,6 +681,11 @@ class HospitableService
                 $public = $item['public'] ?? [];
                 $rating = isset($public['rating']) ? (float) $public['rating'] : null;
 
+                // Exclude reviews below 3.5 rating
+                if ($rating !== null && $rating < 3.5) {
+                    continue;
+                }
+
                 if ($rating !== null) {
                     $ratingSum += $rating;
                     $ratingCount++;
