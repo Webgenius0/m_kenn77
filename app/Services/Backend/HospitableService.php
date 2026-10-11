@@ -94,8 +94,6 @@ class HospitableService
 
         $requestUrl = "{$baseUrl}/properties";
 
-        Log::info('Hospitable API request', ['url' => $requestUrl]);
-
         try {
             $response = Http::withToken($apiKey)
                 ->withHeaders([
@@ -205,14 +203,6 @@ class HospitableService
     }
 
     /**
-     * Clear cached calendar for a specific property.
-     */
-    public function clearCalendarCache(string $propertyId): void
-    {
-        Cache::forget("hospitable_calendar_{$propertyId}");
-    }
-
-    /**
      * Retrieve calendar availability and pricing from Hospitable API.
      *
      * URL: https://public.api.hospitable.com/v2/properties/{uuid}/calendar
@@ -220,10 +210,9 @@ class HospitableService
      * @param string $propertyId Hospitable property UUID/ID
      * @param string|null $startDate YYYY-MM-DD
      * @param string|null $endDate YYYY-MM-DD
-     * @param bool $refresh Force bypass cache
      * @return array{connected: bool, days: array, booked_dates: array, message: ?string}
      */
-    public function getCalendar(string $propertyId, ?string $startDate = null, ?string $endDate = null, bool $refresh = false): array
+    public function getCalendar(string $propertyId, ?string $startDate = null, ?string $endDate = null): array
     {
         if (!$this->isConfigured()) {
             return [
@@ -237,15 +226,7 @@ class HospitableService
         $startDate = $startDate ?: now()->format('Y-m-d');
         $endDate = $endDate ?: now()->addMonths(6)->format('Y-m-d');
 
-        $cacheKey = "hospitable_calendar_{$propertyId}_{$startDate}_{$endDate}";
-
-        if ($refresh) {
-            Cache::forget($cacheKey);
-        }
-
-        return Cache::remember($cacheKey, self::CACHE_TTL_SECONDS, function () use ($propertyId, $startDate, $endDate) {
-            return $this->fetchCalendarFromApi($propertyId, $startDate, $endDate);
-        });
+        return $this->fetchCalendarFromApi($propertyId, $startDate, $endDate);
     }
 
     /**
@@ -479,8 +460,6 @@ class HospitableService
                 ];
             }
 
-
-            $this->clearCalendarCache($propertyId);
 
             return [
                 'success' => true,
