@@ -204,8 +204,12 @@ class AuthApiController extends Controller
         try {
             if ($request->provider === 'google') {
                 $socialUser = Socialite::driver('google')->stateless()->userFromToken($request->token);
+
             }else {
-                return $this->error('Unsupported provider', 422);
+                return response()->json([
+                    'status' => 401,
+                    'message' => 'Invalid or Expired Token',
+                ], 401);
             }
 
             if ($socialUser) {
@@ -213,9 +217,15 @@ class AuthApiController extends Controller
                 if (!$user) {
                     $password = Str::random(16);
 
+                    $fullName = $socialUser->getName() ?? 'First Last';
+                    $nameParts = explode(' ', trim($fullName), 2);
+
+                    $firstName = $nameParts[0] ?? 'First';
+                    $lastName = $nameParts[1] ?? 'Last';
+
                     $user = User::create([
-                        'first_name'        => $socialUser->getName() ?? "First",
-                        'last_name'         => $socialUser->getLastName() ?? "Last",
+                        'first_name'        => $firstName,
+                        'last_name'         => $lastName,
                         'email'             => $socialUser->email,
                         'password'          => Hash::make($password),
                         'avatar'            => $socialUser->getAvatar() ?? null,
