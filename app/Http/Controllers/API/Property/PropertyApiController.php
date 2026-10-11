@@ -9,6 +9,7 @@ use App\Models\Property;
 use App\Services\Backend\HospitableService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Carbon;
 
 class PropertyApiController extends Controller
@@ -18,44 +19,69 @@ class PropertyApiController extends Controller
     public function index(Request $request): JsonResponse
     {
         try {
-            $properties = Property::query()
+            $checkIn  = $request->input('check_in');  // YYYY-MM-DD
+            $checkOut = $request->input('check_out'); // YYYY-MM-DD
+            $hasDateFilter = filled($checkIn) && filled($checkOut);
+
+            $baseQuery = Property::query()
                 ->with('images')
                 ->where('is_active', true)
                 ->when($request->filled('location'), function ($query) use ($request) {
-                    $location = $request->input('location');
-                    $query->where('location', $location);
+                    $query->where('location', $request->input('location'));
                 })
-                ->when($request->filled('destination_type'), function ($query) use ($request) {
-                    $type = $request->input('destination_type');
-                    $query->whereHas('destinationType', function ($q) use ($type) {
-                        $q->where('slug', $type)->orWhere('id', $type);
-                    });
+                ->when($request->filled('guests'), function ($query) use ($request) {
+                    $query->where('max_guests', '>=', (int) $request->input('guests'));
                 })
-                ->latest()
-                ->paginate($request->input('per_page', 12));
+                ->latest();
 
-            $properties->getCollection()->transform(function (Property $property) {
+            $transform = function (Property $property) {
                 [$avgRating, $reviewCount] = $this->getReviewSummary($property);
 
                 return [
-                    'id'                => $property->id,
-                    'name'              => $property->name,
-                    'slug'              => $property->slug,
-                    'location'          => $property->location,
-                    'price_per_night'   => $property->price_per_night,
-                    'max_guests'        => $property->max_guests,
-                    'bedrooms'          => $property->bedrooms,
-                    'bathrooms'         => $property->bathrooms,
-                    'avg_rating'        => $avgRating,
-                    'review_count'      => $reviewCount,
-                    'images'            => $property->images->map(function ($image) {
-                        return [
-                            'image_path' => $image->image_path,
-                            'is_primary' => (bool) $image->is_primary,
-                        ];
-                    })->values(),
+                    'id'              => $property->id,
+                    'name'            => $property->name,
+                    'slug'            => $property->slug,
+                    'location'        => $property->location,
+                    'price_per_night' => $property->price_per_night,
+                    'max_guests'      => $property->max_guests,
+                    'bedrooms'        => $property->bedrooms,
+                    'bathrooms'       => $property->bathrooms,
+                    'avg_rating'      => $avgRating,
+                    'review_count'    => $reviewCount,
+                    'images'          => $property->images->map(fn ($img) => [
+                        'image_path' => $img->image_path,
+                        'is_primary' => (bool) $img->is_primary,
+                    ])->values(),
                 ];
-            });
+            };
+
+            if ($hasDateFilter) {
+                // Phase 1 — fetch all DB candidates (no pagination yet).
+                $allProperties = $baseQuery->get();
+
+                // Phase 2 — filter out properties with any unavailable day in range.
+                $available = $allProperties
+                    ->filter(fn (Property $p) => $this->isAvailableForDates($p, $checkIn, $checkOut))
+                    ->values();
+
+                // Phase 3 — manually paginate the filtered collection.
+                $perPage = (int) $request->input('per_page', 12);
+                $page    = (int) $request->input('page', 1);
+
+                $paginator = new LengthAwarePaginator(
+                    $available->forPage($page, $perPage)->map($transform)->values(),
+                    $available->count(),
+                    $perPage,
+                    $page,
+                    ['path' => $request->url(), 'query' => $request->query()]
+                );
+
+                return $this->successResponse('Properties list', $paginator);
+            }
+
+            // No date filter — standard paginated query.
+            $properties = $baseQuery->paginate($request->input('per_page', 12));
+            $properties->getCollection()->transform($transform);
 
             return $this->successResponse('Properties list', $properties);
 
@@ -332,6 +358,69 @@ class PropertyApiController extends Controller
             $result['avg_rating']   ?? null,
             $result['review_count'] ?? 0,
         ];
+    }
+
+    /**
+     * Return true only if every night in [checkIn, checkOut) is available for the property.
+     *
+     * For Hospitable-connected properties the calendar API is the source of truth.
+     * Falls back to the local bookings table when Hospitable is not reachable or not set.
+     */
+    private function isAvailableForDates(Property $property, string $checkIn, string $checkOut): bool
+    {
+        $start = Carbon::parse($checkIn);
+        $end   = Carbon::parse($checkOut);
+
+        if ($end->lessThanOrEqualTo($start)) {
+            return false;
+        }
+
+        if (filled($property->hospitable_property_id)) {
+            /** @var HospitableService $service */
+            $service = app(HospitableService::class);
+            $result  = $service->getCalendar(
+                $property->hospitable_property_id,
+                $checkIn,
+                $checkOut
+            );
+
+            if ($result['connected']) {
+                // Build a quick date → available map.
+                $availabilityMap = [];
+                foreach ($result['days'] as $day) {
+                    $availabilityMap[$day['date']] = (bool) $day['available'];
+                }
+
+                // Every night from check-in up to (but not including) check-out must be available.
+                $cursor = $start->copy();
+                while ($cursor->lessThan($end)) {
+                    $dateStr = $cursor->format('Y-m-d');
+                    if (isset($availabilityMap[$dateStr]) && !$availabilityMap[$dateStr]) {
+                        return false;
+                    }
+                    $cursor->addDay();
+                }
+
+                return true;
+            }
+
+            // Hospitable returned an error — fall through to local check.
+        }
+
+        return $this->isAvailableLocally($property, $checkIn, $checkOut);
+    }
+
+    /**
+     * Check availability against the local bookings table.
+     * Returns true when no confirmed/paid/pending booking overlaps the requested range.
+     */
+    private function isAvailableLocally(Property $property, string $checkIn, string $checkOut): bool
+    {
+        return !Booking::where('property_id', $property->id)
+            ->whereIn('status', ['confirmed', 'paid', 'pending'])
+            ->where('check_in', '<', $checkOut)  // booking starts before our check-out
+            ->where('check_out', '>', $checkIn)  // booking ends after our check-in
+            ->exists();
     }
 
     /**

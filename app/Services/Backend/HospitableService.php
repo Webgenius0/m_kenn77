@@ -238,12 +238,6 @@ class HospitableService
         $baseUrl = $this->getBaseUrl();
         $requestUrl = "{$baseUrl}/properties/{$propertyId}/calendar";
 
-        Log::info('Hospitable Calendar API request', [
-            'url' => $requestUrl,
-            'start_date' => $startDate,
-            'end_date' => $endDate,
-        ]);
-
         try {
             $response = Http::withToken($apiKey)
                 ->withHeaders([
@@ -386,12 +380,6 @@ class HospitableService
         if (!empty($note)) {
             $payload['note'] = $note;
         }
-
-        Log::info('Hospitable Calendar Update request', [
-            'url'         => $requestUrl,
-            'dates_count' => count($dates),
-            'note'        => $note,
-        ]);
 
         try {
             $response = Http::withToken($apiKey)
