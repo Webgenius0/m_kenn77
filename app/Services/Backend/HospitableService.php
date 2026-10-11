@@ -585,6 +585,7 @@ class HospitableService
                 'available'           => true,
                 'closed_for_checkin'  => false,
                 'closed_for_checkout' => false,
+                'note'                => $note,
             ];
             $current->addDay();
         }
