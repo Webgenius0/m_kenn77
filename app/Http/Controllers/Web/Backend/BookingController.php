@@ -4,12 +4,19 @@ namespace App\Http\Controllers\Web\Backend;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
+use App\Services\Backend\HospitableService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class BookingController extends Controller
 {
+    protected HospitableService $hospitableService;
+    
+    public function __construct(HospitableService $hospitableService) {
+        $this->hospitableService = $hospitableService;
+    }
+    
     /**
      * Display a listing of all bookings.
      */
@@ -87,6 +94,10 @@ class BookingController extends Controller
 
         $booking->update(['status' => $validated['status']]);
 
+        if ($validated['status'] == 'cancelled' && $booking->property->hospitable_property_id) {
+            $this->hospitableService->unblockDates($booking->property->hospitable_property_id, $booking->check_in, $booking->check_out);
+        }
+
         return back()->with('success', 'Booking status updated successfully.');
     }
 
@@ -95,6 +106,10 @@ class BookingController extends Controller
      */
     public function destroy(Booking $booking)
     {
+        if ($booking->property->hospitable_property_id) {
+            $this->hospitableService->unblockDates($booking->property->hospitable_property_id, $booking->check_in, $booking->check_out);
+        }
+        
         $booking->delete();
 
         return redirect()->route('admin.bookings.index')->with('success', 'Booking deleted successfully.');
