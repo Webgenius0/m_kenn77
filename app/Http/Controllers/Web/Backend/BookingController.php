@@ -92,11 +92,11 @@ class BookingController extends Controller
             'status' => ['required', 'string', 'in:pending,confirmed,cancelled,completed,refunded'],
         ]);
 
-        $booking->update(['status' => $validated['status']]);
-
-        if ($validated['status'] == 'cancelled' && $booking->property->hospitable_property_id) {
+        if (!$booking->status == 'cancelled' && $validated['status'] == 'cancelled' && $booking->property->hospitable_property_id) {
             $this->hospitableService->unblockDates($booking->property->hospitable_property_id, $booking->check_in, $booking->check_out);
         }
+
+        $booking->update(['status' => $validated['status']]);
 
         return back()->with('success', 'Booking status updated successfully.');
     }
@@ -106,10 +106,10 @@ class BookingController extends Controller
      */
     public function destroy(Booking $booking)
     {
-        if ($booking->property->hospitable_property_id) {
+        if (!$booking->status == 'cancelled' && $booking->property->hospitable_property_id) {
             $this->hospitableService->unblockDates($booking->property->hospitable_property_id, $booking->check_in, $booking->check_out);
         }
-        
+
         $booking->delete();
 
         return redirect()->route('admin.bookings.index')->with('success', 'Booking deleted successfully.');
