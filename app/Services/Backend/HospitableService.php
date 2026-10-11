@@ -571,7 +571,7 @@ class HospitableService
     /**
      * Unblock dates on Hospitable API (e.g. if reservation was cancelled).
      */
-    public function unblockDates(string $propertyId, string $checkIn, string $checkOut): array
+    public function unblockDates(string $propertyId, string $checkIn, string $checkOut, ?string $note = null): array
     {
         $start = \Illuminate\Support\Carbon::parse($checkIn);
         $end   = \Illuminate\Support\Carbon::parse($checkOut);
@@ -589,7 +589,7 @@ class HospitableService
             $current->addDay();
         }
 
-        return $this->updateCalendar($propertyId, $dates);
+        return $this->updateCalendar($propertyId, $dates, $note);
     }
 
     /**
