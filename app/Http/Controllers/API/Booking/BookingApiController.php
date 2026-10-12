@@ -6,10 +6,10 @@ use App\Concerns\ApiResponse;
 use App\Http\Controllers\API\Property\PropertyApiController;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
-use App\Models\Coupon;
 use App\Models\Payment;
 use App\Models\Property;
 use App\Models\User;
+use App\Services\Coupon\CouponDiscountService;
 use App\Services\Payment\PayPalService;
 use App\Services\Payment\StripeService;
 use Illuminate\Http\JsonResponse;
@@ -25,11 +25,16 @@ class BookingApiController extends Controller
 
     protected StripeService $stripeService;
     protected PayPalService $payPalService;
+    protected CouponDiscountService $couponDiscountService;
 
-    public function __construct(StripeService $stripeService, PayPalService $payPalService)
-    {
+    public function __construct(
+        StripeService $stripeService,
+        PayPalService $payPalService,
+        CouponDiscountService $couponDiscountService
+    ) {
         $this->stripeService = $stripeService;
         $this->payPalService = $payPalService;
+        $this->couponDiscountService = $couponDiscountService;
     }
 
     /**
@@ -108,10 +113,12 @@ class BookingApiController extends Controller
             $pricePerNight = (float) ($property->price_per_night ?? 0);
             $subtotal = round($nights * $pricePerNight, 2);
 
-            $couponData = $this->calculateCouponDiscount(
+            $couponData = $this->couponDiscountService->calculate(
                 $validated['coupon_code'] ?? null,
                 $subtotal,
-                $nights
+                $nights,
+                $checkIn,
+                $pricePerNight
             );
 
             $discount = $couponData['discount'];
@@ -266,51 +273,6 @@ class BookingApiController extends Controller
         return is_numeric($identifier)
             ? Property::findOrFail($identifier)
             : Property::where('slug', $identifier)->orWhere('id', $identifier)->firstOrFail();
-    }
-
-    /**
-     * Validate and calculate coupon discount.
-     */
-    protected function calculateCouponDiscount(?string $code, float $subtotal, int $nights): array
-    {
-        if (blank($code)) {
-            return ['discount' => 0.0, 'coupon' => null];
-        }
-
-        $coupon = Coupon::where('code', trim($code))->where('is_active', true)->first();
-
-        if (!$coupon) {
-            return ['discount' => 0.0, 'coupon' => null];
-        }
-
-        // Check date validity
-        $now = now();
-        if ($coupon->starts_at && $now->lt($coupon->starts_at)) {
-            return ['discount' => 0.0, 'coupon' => null];
-        }
-        if ($coupon->ends_at && $now->gt($coupon->ends_at)) {
-            return ['discount' => 0.0, 'coupon' => null];
-        }
-
-        // Check minimum nights
-        if ($coupon->min_night && $nights < $coupon->min_night) {
-            return ['discount' => 0.0, 'coupon' => null];
-        }
-
-        $discount = 0.0;
-        $val = (float) $coupon->value;
-
-        if (strtolower($coupon->type) === 'percent' || strtolower($coupon->type) === 'percentage') {
-            $discount = round(($subtotal * $val) / 100, 2);
-        } else {
-            // Fixed discount
-            $discount = min($val, $subtotal);
-        }
-
-        return [
-            'discount' => $discount,
-            'coupon'   => $coupon,
-        ];
     }
 
     /**

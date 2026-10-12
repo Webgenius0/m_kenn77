@@ -5,4 +5,5 @@ use Illuminate\Support\Facades\Route;
 
 Route::controller(CouponApiController::class)->prefix('coupons')->group(function () {
     Route::get('/', 'index');
+    Route::post('/apply', 'couponCalculate');
 });

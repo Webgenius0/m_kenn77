@@ -5,19 +5,31 @@ interface Coupon {
     id: number;
     title: string | null;
     subtitle: string | null;
-    image: string | null;
-    type: "percentage" | "fixed";
+    coupon_image: string | null;
+    type: "general" | "early_bird" | "long_stay" | "last_minute" | "day_based";
     code: string;
-    value: number;
-    min_night: number;
+    discount_type: "percentage" | "fixed";
+    discount_value: number;
+    minimum_nights: number | null;
+    minimum_booking_amount: number | null;
+    advance_booking_days: number | null;
+    applicable_days: string[] | null;
     starts_at: string | null;
     ends_at: string | null;
-    is_active: boolean;
+    status: boolean;
 }
 
 interface Props {
     coupons: Coupon[];
 }
+
+const couponTypeLabels: Record<Coupon["type"], string> = {
+    general: "General Promo",
+    early_bird: "Early Bird",
+    long_stay: "Long Stay",
+    last_minute: "Last Minute",
+    day_based: "Day Based",
+};
 
 export default function Index({ coupons }: Props) {
     const deleteCoupon = (id: number) => {
@@ -29,7 +41,9 @@ export default function Index({ coupons }: Props) {
             confirmButtonColor: "#dc3545",
             confirmButtonText: "Yes, delete coupon",
         }).then((result) => {
-            if (result.isConfirmed) router.delete(`/admin/coupons/${id}`);
+            if (result.isConfirmed) {
+                router.delete(`/admin/coupons/${id}`);
+            }
         });
     };
 
@@ -58,9 +72,11 @@ export default function Index({ coupons }: Props) {
                                     <tr>
                                         <th className="fw-medium pe-0 rtl-pe" scope="col">ID</th>
                                         <th className="fw-medium" scope="col">Coupon</th>
+                                        <th className="fw-medium" scope="col">Coupon type</th>
                                         <th className="fw-medium" scope="col">Code</th>
                                         <th className="fw-medium" scope="col">Discount</th>
                                         <th className="fw-medium" scope="col">Minimum nights</th>
+                                        <th className="fw-medium" scope="col">Minimum amount</th>
                                         <th className="fw-medium" scope="col">Validity</th>
                                         <th className="fw-medium" scope="col">Status</th>
                                         <th className="fw-medium" scope="col">Action</th>
@@ -73,20 +89,22 @@ export default function Index({ coupons }: Props) {
                                                 <td className="text-body pe-0 rtl-pe">{coupon.id}</td>
                                                 <td className="text-body">
                                                     <div className="d-flex align-items-center gap-2">
-                                                        {coupon.image && <img src={coupon.image} alt="" style={{ width: 44, height: 44, objectFit: "cover", borderRadius: 6 }} />}
+                                                        {coupon.coupon_image && <img src={coupon.coupon_image} alt="" style={{ width: 44, height: 44, objectFit: "cover", borderRadius: 6 }} />}
                                                         <div>
                                                             <div className="fw-medium">{coupon.title || "Untitled coupon"}</div>
                                                             <small className="text-muted">{coupon.subtitle}</small>
                                                         </div>
                                                     </div>
                                                 </td>
+                                                <td className="text-body">{couponTypeLabels[coupon.type]}</td>
                                                 <td className="text-body"><code>{coupon.code}</code></td>
-                                                <td className="text-body">{coupon.type === "percentage" ? `${coupon.value}%` : `$${coupon.value}`}</td>
-                                                <td className="text-body">{coupon.min_night}</td>
+                                                <td className="text-body">{coupon.discount_type === "percentage" ? `${coupon.discount_value}%` : `$${coupon.discount_value}`}</td>
+                                                <td className="text-body">{coupon.minimum_nights || "Any"}</td>
+                                                <td className="text-body">{coupon.minimum_booking_amount === null ? "Not set" : `$${coupon.minimum_booking_amount}`}</td>
                                                 <td className="text-body">{coupon.starts_at ? new Date(coupon.starts_at).toLocaleDateString() : "Always"} - {coupon.ends_at ? new Date(coupon.ends_at).toLocaleDateString() : "Open"}</td>
                                                 <td>
-                                                    <span className={coupon.is_active ? "text-success bg-success bg-opacity-10 fs-15 fw-normal d-inline-block default-badge" : "text-danger bg-danger bg-opacity-10 fs-15 fw-normal d-inline-block default-badge"}>
-                                                        {coupon.is_active ? "Active" : "Inactive"}
+                                                    <span className={coupon.status ? "text-success bg-success bg-opacity-10 fs-15 fw-normal d-inline-block default-badge" : "text-danger bg-danger bg-opacity-10 fs-15 fw-normal d-inline-block default-badge"}>
+                                                        {coupon.status ? "Active" : "Inactive"}
                                                     </span>
                                                 </td>
                                                 <td>
@@ -103,7 +121,7 @@ export default function Index({ coupons }: Props) {
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan={8} className="text-center">No coupons found</td>
+                                            <td colSpan={10} className="text-center">No coupons found</td>
                                         </tr>
                                     )}
                                 </tbody>
