@@ -34,8 +34,6 @@ class Coupon extends Model
         'status' => 'boolean',
     ];
 
-    protected $appends = ['image', 'value', 'min_night', 'is_active'];
-
     public function setCodeAttribute(string $value): void
     {
         $this->attributes['code'] = strtoupper(trim($value));
@@ -44,25 +42,5 @@ class Coupon extends Model
     public function getCouponImageAttribute(?string $value): ?string
     {
         return $value ? asset('storage/' . $value) : null;
-    }
-
-    public function getImageAttribute(): ?string
-    {
-        return $this->coupon_image;
-    }
-
-    public function getValueAttribute(): string
-    {
-        return $this->discount_value;
-    }
-
-    public function getMinNightAttribute(): ?int
-    {
-        return $this->minimum_nights;
-    }
-
-    public function getIsActiveAttribute(): bool
-    {
-        return $this->status;
     }
 }
