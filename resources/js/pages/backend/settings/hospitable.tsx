@@ -31,7 +31,7 @@ export default function HospitableSettings({
     return (
         <>
             <Head title="Hospitable Settings" />
-            <div className="card bg-white border border-white rounded-10 p-20 mb-4">
+            <div className="card hospitable-settings-page bg-white border border-white rounded-10 p-20 mb-4">
                 <div className="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-20">
                     <div>
                         <h3 className="mb-1 fs-22">Hospitable API Settings</h3>

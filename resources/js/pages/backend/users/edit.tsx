@@ -10,6 +10,8 @@ import {
 
 import { useState } from "react";
 
+const DEFAULT_USER_AVATAR = "/backend/assets/images/placholder.png";
+
 interface Props {
     user: any;
 }
@@ -30,7 +32,7 @@ export default function Edit({
         phone_number: user.phone_number || "",
         password: "",
         password_confirmation: "",
-        role: user.role || "",
+        role: user.role === "admin" ? "admin" : "user",
         avatar: null as File | null,
     });
 
@@ -376,9 +378,9 @@ export default function Edit({
                                         data.avatar
                                     }
                                     imageUrl={
-                                        user.avatar
+                                        user.avatar && user.avatar !== "null"
                                             ? `/${user.avatar}`
-                                            : ""
+                                            : DEFAULT_USER_AVATAR
                                     }
                                     onChange={(
                                         file
@@ -454,14 +456,6 @@ export default function Edit({
 
                                 <option value="admin">
                                     Admin
-                                </option>
-
-                                <option value="manager">
-                                    Manager
-                                </option>
-
-                                <option value="editor">
-                                    Editor
                                 </option>
 
                                 <option value="user">

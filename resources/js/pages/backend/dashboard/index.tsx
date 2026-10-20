@@ -642,7 +642,7 @@ export default function Dashboard({
                 </div>
 
                 {/* Payment Tracking Management System on Dashboard */}
-                <div className="row">
+                <div className="row payment-tracking-dashboard">
                     <div className="col-12">
                         <div className="card bg-white p-20 rounded-10 border border-white mb-4 shadow-sm">
                             {/* Section Header */}

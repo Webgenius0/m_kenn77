@@ -344,7 +344,7 @@ export default function PaymentsIndex({ payments, stats, filters }: Props) {
     return (
         <>
             <Head title="Payment Tracking Management" />
-            <div className="main-content-container overflow-hidden pb-4" style={{ minHeight: '80vh' }}>
+            <div className="main-content-container payment-tracking-page overflow-hidden pb-4" style={{ minHeight: '80vh' }}>
 
                 {/* Page Title & Actions */}
                 <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4 mt-2">

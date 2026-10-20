@@ -2,6 +2,8 @@ import MainLayout from "@/layouts/main-layout";
 
 import { Link } from "@inertiajs/react";
 
+const DEFAULT_USER_AVATAR = "/backend/assets/images/placholder.png";
+
 interface Props {
     user: any;
 }
@@ -14,7 +16,7 @@ export default function Show({
         user.avatar &&
             user.avatar !== "null"
             ? `/${user.avatar}`
-            : "/backend/assets/images/placholder.png";
+            : DEFAULT_USER_AVATAR;
 
     return (
         <div className="row">
@@ -42,6 +44,10 @@ export default function Show({
                                 width: "120px",
                                 height: "120px",
                                 objectFit: "cover",
+                            }}
+                            onError={(event) => {
+                                event.currentTarget.onerror = null;
+                                event.currentTarget.src = DEFAULT_USER_AVATAR;
                             }}
                         />
 

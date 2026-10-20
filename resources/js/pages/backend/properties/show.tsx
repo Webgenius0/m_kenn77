@@ -48,7 +48,7 @@ export default function Show({ property }: { property: Property }) {
     <>
       <Head title={`${property.name} | Property Details`} />
 
-      <div className="main-content-container overflow-hidden">
+      <div className="main-content-container property-page overflow-hidden">
         <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
           <div>
             <h3 className="mb-1">Property details</h3>

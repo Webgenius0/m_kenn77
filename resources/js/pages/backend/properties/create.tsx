@@ -185,7 +185,7 @@ export default function Create({
   return (
     <>
       <Head title="Add Property" />
-      <div className="main-content-container overflow-hidden" style={{ minHeight: "75vh" }}>
+      <div className="main-content-container property-page overflow-hidden" style={{ minHeight: "75vh" }}>
         <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4 mt-1"><div><h3 className="mb-1">Add property</h3><p className="fs-16 text-muted mb-0">Create a complete listing with pricing, location, amenities, and house rules.</p></div></div>
         <form onSubmit={submit}>
           <div className="row g-4">

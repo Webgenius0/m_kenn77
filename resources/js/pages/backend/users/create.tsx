@@ -406,14 +406,6 @@ export default function Create() {
                                     Admin
                                 </option>
 
-                                <option value="manager">
-                                    Manager
-                                </option>
-
-                                <option value="editor">
-                                    Editor
-                                </option>
-
                                 <option value="user">
                                     User
                                 </option>

@@ -243,7 +243,7 @@ export default function Index({
                 aria-hidden="true"
             >
                 <div className="modal-dialog modal-lg modal-dialog-scrollable">
-                    <div className="modal-content">
+                    <div className="modal-content log-details-modal">
                         <div className="modal-header">
                             <h5 className="modal-title">
                                 Log Details
@@ -342,4 +342,3 @@ export default function Index({
         </>
     );
 }
-

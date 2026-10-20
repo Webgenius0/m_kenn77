@@ -3,6 +3,8 @@ import { Head, router, useForm, Link } from "@inertiajs/react";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 
+const DEFAULT_USER_AVATAR = "/backend/assets/images/placholder.png";
+
 
 interface User {
     id: number;
@@ -307,7 +309,16 @@ export default function Index({ users, filters }: Props) {
                                                         <td>
                                                             <div className="d-flex align-items-center">
                                                                 <div className="flex-shrink-0">
-                                                                    <img alt="user15" className="rounded-circle" src={user.avatar ? `/${user.avatar}` : "/backend/assets/images/placholder.png"} style={{ width: "35px", height: "35px" }} />
+                                                                    <img
+                                                                        alt={`${user.first_name} ${user.last_name}`}
+                                                                        className="rounded-circle"
+                                                                        src={user.avatar && user.avatar !== "null" ? `/${user.avatar}` : DEFAULT_USER_AVATAR}
+                                                                        onError={(event) => {
+                                                                            event.currentTarget.onerror = null;
+                                                                            event.currentTarget.src = DEFAULT_USER_AVATAR;
+                                                                        }}
+                                                                        style={{ width: "35px", height: "35px", objectFit: "cover" }}
+                                                                    />
                                                                 </div>
                                                                 <div className="flex-grow-1 ms-12">
                                                                     <h4 className="fw-medium fs-16 mb-0">

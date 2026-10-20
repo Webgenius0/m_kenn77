@@ -193,3 +193,353 @@
         @apply bg-background text-foreground;
     }
 }
+
+.dark select,
+.dark select option {
+    color: #e5e7eb !important;
+    color-scheme: dark;
+    background-color: #1f2937 !important;
+}
+
+.dark .form-select {
+    --bs-form-select-bg-img: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23cbd5e1' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+    color: #e5e7eb !important;
+    background-color: #1f2937 !important;
+    border-color: #4b5563 !important;
+}
+
+.dark .property-page {
+    color: #e5e7eb;
+}
+
+.dark .property-page .form-control,
+.dark .property-page .form-select {
+    color: #e5e7eb;
+    color-scheme: dark;
+    background-color: #1f2937;
+    border-color: #4b5563;
+}
+
+.dark .property-page .form-control::placeholder {
+    color: #9ca3af;
+}
+
+.dark .property-page .form-control[type='file']::file-selector-button {
+    color: #e5e7eb;
+    background-color: #273449;
+}
+
+.dark .property-page .bg-light,
+.dark .property-page .bg-light-40 {
+    color: #e5e7eb !important;
+    background-color: #1b232d !important;
+}
+
+.dark .property-page .bg-white {
+    color: #e5e7eb !important;
+    background-color: #1f2937 !important;
+}
+
+.dark .property-page .text-dark {
+    color: #f3f4f6 !important;
+}
+
+.dark .property-page .text-muted {
+    color: #9ca3af !important;
+}
+
+.dark .property-page .border,
+.dark .property-page .border-bottom {
+    border-color: #374151 !important;
+}
+
+.dark .property-page code {
+    color: #f472b6;
+}
+
+.dark .booking-payment-history {
+    color: #e5e7eb;
+    background-color: #1f2937 !important;
+}
+
+.dark .booking-payment-history .card-header {
+    color: #e5e7eb;
+    border-color: #374151 !important;
+}
+
+.dark .booking-payment-history .table {
+    --bs-table-bg: #1f2937;
+    --bs-table-color: #e5e7eb;
+    --bs-table-border-color: #374151;
+}
+
+.dark .booking-payment-history .table > :not(caption) > * > * {
+    color: #e5e7eb;
+    background-color: var(--bs-table-bg);
+    border-bottom-color: #374151;
+    box-shadow: inset 0 0 0 9999px var(--bs-table-bg);
+}
+
+.dark .booking-payment-history .table thead.table-light {
+    --bs-table-bg: #111827;
+    --bs-table-color: #cbd5e1;
+}
+
+.dark .sidebar-area .menu-vertical .menu-item .menu-link:hover,
+.dark .sidebar-area .menu-vertical .menu-item .menu-link:hover .title,
+.dark .sidebar-area .menu-vertical .menu-item .menu-link:hover .material-symbols-outlined {
+    color: #f472b6 !important;
+    background-color: #273449 !important;
+}
+
+.dark .sidebar-area .menu-vertical .menu-sub .menu-item .menu-link.active,
+.dark .sidebar-area .menu-vertical .menu-sub .menu-item .menu-link.active:hover {
+    color: #f472b6 !important;
+    background-color: #273449 !important;
+}
+
+html.dark body[data-theme='dark'] .sidebar-area .layout-menu .menu-inner .menu-item.open > .menu-sub > .menu-item.active > .menu-link.active,
+html.dark body[data-theme='dark'] .sidebar-area .layout-menu .menu-inner .menu-item.open > .menu-sub > .menu-item.active > .menu-link.active:hover {
+    color: #f472b6 !important;
+    background-color: #273449 !important;
+}
+
+.dark .sidebar-area .menu-vertical .menu-sub .menu-item .menu-link:hover::before,
+.dark .sidebar-area .menu-vertical .menu-sub .menu-item .menu-link.active::before {
+    background-color: #f472b6 !important;
+}
+
+html.dark body[data-theme='dark'] .sidebar-area .layout-menu .menu-inner .menu-item.open > .menu-sub > .menu-item.active > .menu-link.active::before {
+    opacity: 1 !important;
+    background-color: #f472b6 !important;
+}
+
+.sidebar-area .menu-vertical > .menu-inner > .menu-item.active > .menu-link.active:not(.menu-toggle) {
+    color: #d63384 !important;
+    background-color: #ecf0ff;
+}
+
+.sidebar-area .menu-vertical > .menu-inner > .menu-item.active > .menu-link.active:not(.menu-toggle) .title,
+.sidebar-area .menu-vertical > .menu-inner > .menu-item.active > .menu-link.active:not(.menu-toggle) .menu-icon {
+    color: #d63384 !important;
+}
+
+.dark .sidebar-area .menu-vertical > .menu-inner > .menu-item.active > .menu-link.active:not(.menu-toggle) {
+    color: #f472b6 !important;
+    background-color: #273449 !important;
+}
+
+.dark .sidebar-area .menu-vertical > .menu-inner > .menu-item.active > .menu-link.active:not(.menu-toggle) .title,
+.dark .sidebar-area .menu-vertical > .menu-inner > .menu-item.active > .menu-link.active:not(.menu-toggle) .menu-icon {
+    color: #f472b6 !important;
+}
+
+.dark .log-details-modal {
+    color: #e5e7eb;
+    background-color: #1b232d !important;
+}
+
+.dark .log-details-modal .modal-header,
+.dark .log-details-modal .modal-footer {
+    border-color: #374151 !important;
+}
+
+.dark .log-details-modal .modal-title,
+.dark .log-details-modal .modal-body,
+.dark .log-details-modal .modal-body strong {
+    color: #e5e7eb;
+}
+
+.dark .log-details-modal .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+.dark .log-details-modal pre {
+    color: #cbd5e1 !important;
+    background-color: #111827 !important;
+    border: 1px solid #374151;
+}
+
+.dark .hospitable-settings-page {
+    color: #e5e7eb;
+    background-color: #1f2937 !important;
+    border-color: #374151 !important;
+}
+
+.dark .hospitable-settings-page .bg-light {
+    color: #e5e7eb !important;
+    background-color: #273449 !important;
+}
+
+.dark .hospitable-settings-page .text-muted,
+.dark .hospitable-settings-page .form-text {
+    color: #9ca3af !important;
+}
+
+.dark .hospitable-settings-page .form-control {
+    color: #e5e7eb;
+    background-color: #111827;
+    border-color: #4b5563;
+}
+
+.dark .hospitable-settings-page .form-control::placeholder {
+    color: #9ca3af;
+}
+
+.dark .hospitable-settings-page .input-group .btn-outline-secondary {
+    color: #cbd5e1;
+    border-color: #4b5563;
+}
+
+.dark .hospitable-settings-page code {
+    color: #f472b6;
+}
+
+.dark .hospitable-settings-page .alert-info {
+    color: #bae6fd;
+    background-color: #0c3049;
+    border-color: #164e63;
+}
+
+.dark .hospitable-settings-page .alert-warning {
+    color: #fde68a;
+    background-color: #422006;
+    border-color: #713f12;
+}
+
+.dark .payment-tracking-dashboard,
+.dark .payment-tracking-page {
+    color: #e5e7eb;
+}
+
+.dark .payment-tracking-dashboard .card,
+.dark .payment-tracking-page .card {
+    color: #e5e7eb;
+    background-color: #1f2937 !important;
+    border-color: #374151 !important;
+}
+
+.dark .payment-tracking-dashboard .card-header,
+.dark .payment-tracking-page .card-header {
+    color: #e5e7eb;
+    background-color: #1f2937 !important;
+    border-color: #374151 !important;
+}
+
+.dark .payment-tracking-dashboard .bg-white,
+.dark .payment-tracking-page .bg-white {
+    background-color: #1f2937 !important;
+}
+
+.dark .payment-tracking-dashboard .bg-light,
+.dark .payment-tracking-dashboard .bg-light-subtle,
+.dark .payment-tracking-page .bg-light,
+.dark .payment-tracking-page .bg-light-subtle {
+    color: #e5e7eb !important;
+    background-color: #273449 !important;
+}
+
+.dark .payment-tracking-dashboard .text-dark,
+.dark .payment-tracking-page .text-dark {
+    color: #f3f4f6 !important;
+}
+
+.dark .payment-tracking-dashboard .text-muted,
+.dark .payment-tracking-page .text-muted {
+    color: #9ca3af !important;
+}
+
+.dark .payment-tracking-dashboard .border,
+.dark .payment-tracking-page .border,
+.dark .payment-tracking-dashboard .border-top,
+.dark .payment-tracking-page .border-top,
+.dark .payment-tracking-dashboard .border-bottom,
+.dark .payment-tracking-page .border-bottom {
+    border-color: #374151 !important;
+}
+
+.dark .payment-tracking-dashboard .table,
+.dark .payment-tracking-page .table {
+    --bs-table-bg: #1f2937;
+    --bs-table-color: #e5e7eb;
+    --bs-table-border-color: #374151;
+    --bs-table-striped-bg: #243244;
+    --bs-table-hover-bg: #27364a;
+    --bs-table-accent-bg: transparent;
+}
+
+.dark .payment-tracking-dashboard .table > :not(caption) > * > *,
+.dark .payment-tracking-page .table > :not(caption) > * > * {
+    color: #e5e7eb;
+    background-color: var(--bs-table-bg);
+    border-bottom-color: #374151;
+    box-shadow: inset 0 0 0 9999px var(--bs-table-bg);
+}
+
+.dark .payment-tracking-dashboard .table thead.table-light,
+.dark .payment-tracking-page .table thead.table-light {
+    --bs-table-bg: #111827;
+    --bs-table-color: #cbd5e1;
+}
+
+.dark .payment-tracking-dashboard .form-control,
+.dark .payment-tracking-dashboard .form-select,
+.dark .payment-tracking-dashboard .input-group-text,
+.dark .payment-tracking-page .form-control,
+.dark .payment-tracking-page .form-select,
+.dark .payment-tracking-page .input-group-text {
+    color: #e5e7eb;
+    background-color: #111827;
+    border-color: #4b5563;
+}
+
+.dark .payment-tracking-dashboard .form-control::placeholder,
+.dark .payment-tracking-page .form-control::placeholder {
+    color: #9ca3af;
+}
+
+.dark .payment-tracking-dashboard .form-select option,
+.dark .payment-tracking-page .form-select option {
+    color: #e5e7eb;
+    background-color: #111827;
+}
+
+.dark .payment-tracking-page .modal-content {
+    color: #e5e7eb;
+    background-color: #1f2937;
+}
+
+.dark .payment-tracking-page .modal-header,
+.dark .payment-tracking-page .modal-footer {
+    border-color: #374151 !important;
+}
+
+.dark .payment-tracking-page .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+@media print {
+    .dark .payment-tracking-page #payment-receipt-printable .receipt-card,
+    .dark .payment-tracking-page #payment-receipt-printable .bg-white {
+        color: #212529 !important;
+        background-color: #fff !important;
+    }
+
+    .dark .payment-tracking-page #payment-receipt-printable .bg-light {
+        background-color: #f8f9fa !important;
+    }
+
+    .dark .payment-tracking-page #payment-receipt-printable .text-dark {
+        color: #212529 !important;
+    }
+
+    .dark .payment-tracking-page #payment-receipt-printable .text-muted {
+        color: #6c757d !important;
+    }
+
+    .dark .payment-tracking-page #payment-receipt-printable .border,
+    .dark .payment-tracking-page #payment-receipt-printable .border-top,
+    .dark .payment-tracking-page #payment-receipt-printable .border-bottom {
+        border-color: #dee2e6 !important;
+    }
+}

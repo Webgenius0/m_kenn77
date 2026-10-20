@@ -67,10 +67,11 @@ class UserController extends Controller
             'email' => ['required', 'email', 'unique:users,email'],
             'phone_number' => ['nullable', 'string', 'regex:/^[0-9\+\-\s\(\)]{7,}$/', 'max:20'],
             'password' => ['required', 'min:6'],
-            'avatar' => ['nullable'],
+            'avatar' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:10240'],
             'role' => [
                 'nullable',
                 'string',
+                'in:admin,user',
             ],
         ]);
 
@@ -123,12 +124,13 @@ class UserController extends Controller
                 'nullable',
                 'image',
                 'mimes:jpg,jpeg,png,webp',
-                'max:2048',
+                'max:10240',
             ],
 
             'role' => [
                 'nullable',
                 'string',
+                'in:admin,user',
             ],
 
             'password' => [

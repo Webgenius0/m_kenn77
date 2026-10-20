@@ -338,7 +338,7 @@ export default function PaymentShow({ payment }: Props) {
                 }
             `}} />
 
-            <div className="main-content-container overflow-hidden pb-4" style={{ minHeight: '80vh' }}>
+            <div className="main-content-container payment-tracking-page overflow-hidden pb-4" style={{ minHeight: '80vh' }}>
 
                 {/* Back and Page Header */}
                 <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4 mt-2">

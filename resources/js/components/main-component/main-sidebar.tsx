@@ -173,11 +173,22 @@ const items: MenuItem[] = [
     // },
 ];
 
+const matchesPath = (currentUrl: string, href?: string): boolean => {
+    if (!href || href === '#') {
+        return false;
+    }
+
+    const currentPath = currentUrl.split('?')[0].replace(/\/+$/, '') || '/';
+    const targetPath = href.replace(/\/+$/, '') || '/';
+
+    return currentPath === targetPath || currentPath.startsWith(`${targetPath}/`);
+};
+
 export default function MainSidebar() {
     const page = usePage();
     const { setting } = page.props as any;
 
-    const [openMenu, setOpenMenu] = useState<string | null>(null);
+    const [openMenu, setOpenMenu] = useState<{ title: string; url: string } | null>(null);
     const { resolvedAppearance } = useAppearance();
 
     const logo =
@@ -234,29 +245,22 @@ export default function MainSidebar() {
             <aside className="layout-menu menu-vertical menu" data-simplebar="" id="layout-menu" >
                 <ul className="menu-inner">
                     {items.map((item, index) => {
-                        const hasChildren =
-                            item.children &&
-                            item.children.length > 0;
-                        const isActive =
-                            item.href !== '#' &&
-                            page.url.startsWith(
-                                item.href as string
-                            );
-                        const isChildActive =
-                            item.children?.some((child) =>
-                                page.url.startsWith(
-                                    child.href as string
-                                )
-                            );
+                        const hasChildren = Boolean(item.children?.length);
+                        const isActive = matchesPath(page.url, item.href);
+                        const activeChild = item.children?.find((child) =>
+                            matchesPath(page.url, child.href)
+                        );
+                        const isChildActive = Boolean(activeChild);
                         const isOpen =
-                            openMenu === item.title ||
+                            (openMenu?.title === item.title &&
+                                openMenu.url === page.url) ||
                             isChildActive;
                         return (
                             <li
                                 key={index}
-                                className={`menu-item ${isActive || isChildActive
-                                    ? 'open'
-                                    : ''
+                                className={`menu-item ${hasChildren
+                                    ? isChildActive ? 'open' : ''
+                                    : isActive ? 'active' : ''
                                     }`}
                             >
                                 {hasChildren ? (
@@ -264,7 +268,9 @@ export default function MainSidebar() {
                                         <a className={`menu-link menu-toggle ${isOpen ? 'active' : '' }`} href="javascript:void(0);"
                                             onClick={() =>
                                                 setOpenMenu(
-                                                    isOpen ? null : item.title
+                                                    isOpen
+                                                        ? null
+                                                        : { title: item.title, url: page.url }
                                                 )
                                             }
                                         >
@@ -283,12 +289,10 @@ export default function MainSidebar() {
                                                 display: isOpen ? 'block' : 'none',
                                             }}
                                         >
-                                            {item.children?.map(
+                                            {                                            item.children?.map(
                                                 (child, childIndex) => {
                                                     const childActive =
-                                                        page.url.startsWith(
-                                                            child.href as string
-                                                        );
+                                                        matchesPath(page.url, child.href);
 
                                                     return (
                                                         <li
@@ -303,6 +307,10 @@ export default function MainSidebar() {
                                                                     ? 'active'
                                                                     : ''
                                                                     }`}
+                                                                style={childActive ? {
+                                                                    color: resolvedAppearance === 'dark' ? '#f472b6' : '#d63384',
+                                                                    backgroundColor: resolvedAppearance === 'dark' ? '#2c343e' : '#ecf0ff',
+                                                                } : undefined}
                                                                 href={child.href}
                                                             >
                                                                 {child.title}
@@ -319,6 +327,10 @@ export default function MainSidebar() {
                                             ? 'active'
                                             : ''
                                             }`}
+                                        style={isActive ? {
+                                            color: resolvedAppearance === 'dark' ? '#f472b6' : '#d63384',
+                                            backgroundColor: resolvedAppearance === 'dark' ? '#2c343e' : '#ecf0ff',
+                                        } : undefined}
                                         href={item.href}
                                     >
                                         <span

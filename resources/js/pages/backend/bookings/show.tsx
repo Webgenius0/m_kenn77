@@ -386,7 +386,7 @@ export default function BookingShow({ booking }: Props) {
 
                         {/* Payment History */}
                         {booking.payments && booking.payments.length > 0 && (
-                            <div className="card border-0 rounded-10 mb-4" style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.06)' }}>
+                            <div className="card booking-payment-history border-0 rounded-10 mb-4" style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.06)' }}>
                                 <div className="card-header bg-transparent border-bottom d-flex align-items-center gap-2 py-3">
                                     <span className="material-symbols-outlined text-primary">payments</span>
                                     <h5 className="mb-0 fw-semibold">Payment History</h5>
