@@ -33,11 +33,11 @@ export default function Login({ status, canResetPassword }: Props) {
                     <>
                         <div className="grid gap-6">
                             <div className="grid gap-2">
-                                <Label htmlFor="email" className="text-[11px] font-semibold tracking-[0.12em] text-[#52636a] uppercase">Email address</Label>
+                                <Label htmlFor="email" className="text-[11px] font-semibold tracking-[0.12em] text-[#52636a] uppercase dark:text-[#c1cbcc]">Email address</Label>
                                 <Input
                                     id="email"
                                     type="email"
-                                    className="h-12 rounded-xl border-[#d8d6d0] bg-white px-4 text-sm shadow-none transition-colors focus:border-[#b18b50] focus:ring-[#b18b50]/20"
+                                    className="h-12 rounded-xl border-[#d8d6d0] bg-white px-4 text-sm text-[#18232a] shadow-none transition-colors placeholder:text-[#899396] focus:border-[#b18b50] focus:ring-[#b18b50]/20 dark:border-[#445257] dark:bg-[#1b282d] dark:text-[#f1f4f3] dark:placeholder:text-[#89979a]"
                                     name="email"
                                     required
                                     autoFocus
@@ -50,11 +50,11 @@ export default function Login({ status, canResetPassword }: Props) {
 
                             <div className="grid gap-2">
                                 <div className="flex items-center">
-                                    <Label htmlFor="password" className="text-[11px] font-semibold tracking-[0.12em] text-[#52636a] uppercase">Password</Label>
+                                    <Label htmlFor="password" className="text-[11px] font-semibold tracking-[0.12em] text-[#52636a] uppercase dark:text-[#c1cbcc]">Password</Label>
                                     {canResetPassword && (
                                         <TextLink
                                             href={request()}
-                                            className="ml-auto text-xs font-medium text-[#a0783d] no-underline hover:underline"
+                                            className="ml-auto text-xs font-medium text-[#a0783d] no-underline hover:underline dark:text-[#d5b477]"
                                             tabIndex={5}
                                         >
                                             Forgot password?
@@ -64,7 +64,7 @@ export default function Login({ status, canResetPassword }: Props) {
                                 <PasswordInput
                                     id="password"
                                     name="password"
-                                    className="custom-input h-12 rounded-xl border-[#d8d6d0] bg-white px-4 text-sm shadow-none focus:border-[#b18b50] focus:ring-[#b18b50]/20"
+                                    className="custom-input h-12 rounded-xl border-[#d8d6d0] bg-white px-4 text-sm text-[#18232a] shadow-none placeholder:text-[#899396] focus:border-[#b18b50] focus:ring-[#b18b50]/20 dark:border-[#445257] dark:bg-[#1b282d] dark:text-[#f1f4f3] dark:placeholder:text-[#89979a]"
                                     required
                                     tabIndex={2}
                                     autoComplete="current-password"
@@ -79,7 +79,7 @@ export default function Login({ status, canResetPassword }: Props) {
                                     name="remember"
                                     tabIndex={3}
                                 />
-                                <Label htmlFor="remember" className="ms-2 text-sm text-[#718087]">Remember me</Label>
+                                <Label htmlFor="remember" className="ms-2 text-sm text-[#718087] dark:text-[#aab6b8]">Remember me</Label>
                             </div>
 
                             <Button

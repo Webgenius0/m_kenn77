@@ -134,6 +134,28 @@
     max-width: 430px;
 }
 
+html.dark .login-page input:not([type='checkbox']) {
+    background-color: #1b282d !important;
+    border-color: #445257;
+    color: #f1f4f3 !important;
+    caret-color: #f1f4f3;
+    -webkit-text-fill-color: #f1f4f3;
+}
+
+html.dark .login-page input:not([type='checkbox'])::placeholder {
+    color: #aab6b8 !important;
+    opacity: 1;
+    -webkit-text-fill-color: #aab6b8;
+}
+
+html.dark .login-page input:not([type='checkbox']):-webkit-autofill,
+html.dark .login-page input:not([type='checkbox']):-webkit-autofill:hover,
+html.dark .login-page input:not([type='checkbox']):-webkit-autofill:focus {
+    -webkit-text-fill-color: #f1f4f3 !important;
+    -webkit-box-shadow: 0 0 0 1000px #1b282d inset;
+    transition: background-color 9999s ease-out;
+}
+
 @media (max-width: 900px) {
     .login-shell {
         display: block;

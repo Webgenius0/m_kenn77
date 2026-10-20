@@ -13,7 +13,7 @@ export default function LoginLayout({
         : '/backend/assets/images/logo-placeholder.png';
 
     return (
-        <main className="min-h-svh bg-[#f4f1eb] text-[#18232a]">
+        <main className="login-page min-h-svh bg-[#f4f1eb] text-[#18232a] dark:bg-[#11191d] dark:text-[#e7eceb]">
             <div className="login-shell">
                 <section
                     className="login-hero relative isolate flex flex-col justify-between overflow-hidden bg-[#102d35] px-7 py-7 text-white sm:px-12 sm:py-10 lg:px-16 lg:py-12"
@@ -53,18 +53,18 @@ export default function LoginLayout({
                     </div>
                 </section>
 
-                <section className="login-form-panel">
+                <section className="login-form-panel bg-[#f4f1eb] dark:bg-[#11191d]">
                     <div className="login-form-inner">
-                        <div className="mb-10 flex items-center justify-between text-[11px] font-semibold tracking-[0.18em] text-[#718087] uppercase">
+                        <div className="mb-10 flex items-center justify-between text-[11px] font-semibold tracking-[0.18em] text-[#718087] uppercase dark:text-[#aab6b8]">
                             <span>Welcome back</span>
                             <span className="flex items-center gap-2"><span className="size-1.5 rounded-full bg-[#b18b50]" />Secure sign in</span>
                         </div>
                         <div className="mb-9">
-                            <h2 className="text-4xl leading-tight font-medium tracking-[-0.04em] text-[#18232a]">{title}</h2>
-                            <p className="mt-3 max-w-sm text-sm leading-6 text-[#718087]">{description}</p>
+                            <h2 className="text-4xl leading-tight font-medium tracking-[-0.04em] text-[#18232a] dark:text-[#f1f4f3]">{title}</h2>
+                            <p className="mt-3 max-w-sm text-sm leading-6 text-[#718087] dark:text-[#aab6b8]">{description}</p>
                         </div>
                         {children}
-                        <p className="mt-10 text-center text-[11px] leading-5 text-[#8b9699]">Your account is protected with encrypted authentication.<br />© {new Date().getFullYear()} {name || 'Pink House'}</p>
+                        <p className="mt-10 text-center text-[11px] leading-5 text-[#8b9699] dark:text-[#89979a]">Your account is protected with encrypted authentication.<br />© {new Date().getFullYear()} {name || 'Pink House'}</p>
                     </div>
                 </section>
             </div>

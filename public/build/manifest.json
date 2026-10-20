@@ -248,7 +248,7 @@
     ]
   },
   "resources/css/app.css": {
-    "file": "assets/app-DGQ_DKla.css",
+    "file": "assets/app-q0h8ERz3.css",
     "name": "app",
     "names": [
       "app.css"
@@ -257,7 +257,7 @@
     "isEntry": true
   },
   "resources/js/app.tsx": {
-    "file": "assets/app-Y8yLlX_8.js",
+    "file": "assets/app-DnQTMrvY.js",
     "name": "app",
     "src": "resources/js/app.tsx",
     "isEntry": true,
@@ -362,7 +362,7 @@
     ]
   },
   "resources/js/pages/auth/forgot-password.tsx": {
-    "file": "assets/forgot-password-Cpj4sPVG.js",
+    "file": "assets/forgot-password-B8zIdwqI.js",
     "name": "forgot-password",
     "src": "resources/js/pages/auth/forgot-password.tsx",
     "isDynamicEntry": true,
@@ -380,7 +380,7 @@
     ]
   },
   "resources/js/pages/auth/login.tsx": {
-    "file": "assets/login-CaF2r32K.js",
+    "file": "assets/login-DpfM3Mzf.js",
     "name": "login",
     "src": "resources/js/pages/auth/login.tsx",
     "isDynamicEntry": true,
@@ -405,7 +405,7 @@
     ]
   },
   "resources/js/pages/auth/register.tsx": {
-    "file": "assets/register-BWix0zGF.js",
+    "file": "assets/register-Dq5O_Vya.js",
     "name": "register",
     "src": "resources/js/pages/auth/register.tsx",
     "isDynamicEntry": true,
@@ -456,7 +456,7 @@
     ]
   },
   "resources/js/pages/auth/verify-email.tsx": {
-    "file": "assets/verify-email-Bkc0PGt1.js",
+    "file": "assets/verify-email-Bjc8MXfM.js",
     "name": "verify-email",
     "src": "resources/js/pages/auth/verify-email.tsx",
     "isDynamicEntry": true,
@@ -951,7 +951,7 @@
     ]
   },
   "resources/js/pages/backend/settings/appearance.tsx": {
-    "file": "assets/appearance-BygmIXXt.js",
+    "file": "assets/appearance-DZn9YZ39.js",
     "name": "appearance",
     "src": "resources/js/pages/backend/settings/appearance.tsx",
     "isDynamicEntry": true,
@@ -998,7 +998,7 @@
     ]
   },
   "resources/js/pages/backend/settings/security.tsx": {
-    "file": "assets/security-Cj5QuvrV.js",
+    "file": "assets/security-Ddl_5gBE.js",
     "name": "security",
     "src": "resources/js/pages/backend/settings/security.tsx",
     "isDynamicEntry": true,
@@ -1128,7 +1128,7 @@
     ]
   },
   "resources/js/pages/welcome.tsx": {
-    "file": "assets/welcome-B0bJy-hh.js",
+    "file": "assets/welcome-BkNVzlP9.js",
     "name": "welcome",
     "src": "resources/js/pages/welcome.tsx",
     "isDynamicEntry": true,
